@@ -4,7 +4,7 @@ import Killable from "../traits/Killable.js";
 import Gravity from "../traits/Gravity.ts";
 import Stomper from "../traits/Stomper.js";
 import Velocity from "../traits/Velocity.ts";
-import { loadSpriteSheet } from "../loaders/sprite.js";
+import { loadSpriteSheet } from "../loaders/sprite.ts";
 
 export function loadBullet() {
   return loadSpriteSheet("bullet").then(createBulletFactory);

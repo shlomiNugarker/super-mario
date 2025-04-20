@@ -1,6 +1,6 @@
 import Entity from "../Entity.js";
 import Trait from "../Trait.ts";
-import { loadSpriteSheet } from "../loaders/sprite.js";
+import { loadSpriteSheet } from "../loaders/sprite.ts";
 import { findPlayers } from "../player.js";
 
 export function loadPiranhaPlant() {

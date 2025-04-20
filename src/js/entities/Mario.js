@@ -8,7 +8,7 @@ import PoleTraveller from "../traits/PoleTraveller.js";
 import Solid from "../traits/Solid.js";
 import Stomper from "../traits/Stomper.js";
 import { loadAudioBoard } from "../loaders/audio.ts";
-import { loadSpriteSheet } from "../loaders/sprite.js";
+import { loadSpriteSheet } from "../loaders/sprite.ts";
 
 const SLOW_DRAG = 1 / 1000;
 const FAST_DRAG = 1 / 5000;

@@ -3,7 +3,7 @@ import LifeLimit from "../traits/LifeLimit.ts";
 import Gravity from "../traits/Gravity.ts";
 import Velocity from "../traits/Velocity.ts";
 import { loadAudioBoard } from "../loaders/audio.ts";
-import { loadSpriteSheet } from "../loaders/sprite.js";
+import { loadSpriteSheet } from "../loaders/sprite.ts";
 
 export function loadBrickShrapnel(audioContext) {
   return Promise.all([

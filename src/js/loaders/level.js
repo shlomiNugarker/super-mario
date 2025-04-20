@@ -7,7 +7,7 @@ import Level from "../Level.js";
 import { createSpriteLayer } from "../layers/sprites.js";
 import { createBackgroundLayer } from "../layers/background.js";
 import { loadMusicSheet } from "./music.js";
-import { loadSpriteSheet } from "./sprite.js";
+import { loadSpriteSheet } from "./sprite.ts";
 import { loadJSON } from "../loaders.ts";
 
 function createSpawner() {
