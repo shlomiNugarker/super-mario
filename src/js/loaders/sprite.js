@@ -1,4 +1,4 @@
-import { loadJSON, loadImage } from "../loaders.js";
+import { loadJSON, loadImage } from "../loaders.ts";
 import SpriteSheet from "../SpriteSheet.ts";
 import { createAnim } from "../anim.ts";
 

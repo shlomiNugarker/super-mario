@@ -1,4 +1,4 @@
-import { loadJSON } from "../loaders.js";
+import { loadJSON } from "../loaders.ts";
 import MusicPlayer from "../MusicPlayer.ts";
 
 export function loadMusicSheet(name) {

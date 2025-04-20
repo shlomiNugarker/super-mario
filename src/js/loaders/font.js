@@ -1,4 +1,4 @@
-import { loadImage } from "../loaders.js";
+import { loadImage } from "../loaders.ts";
 import SpriteSheet from "../SpriteSheet.ts";
 
 const CHARS = " 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ©!-×.";

@@ -1,5 +1,5 @@
 import AudioBoard from "../AudioBoard.ts";
-import { loadJSON } from "../loaders.js";
+import { loadJSON } from "../loaders.ts";
 
 export function loadAudioBoard(
   name: string,
