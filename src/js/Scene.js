@@ -1,22 +1,21 @@
-import Compositor from './Compositor.js';
-import EventEmitter from './EventEmitter.js';
+import Compositor from "./Compositor.ts";
+import EventEmitter from "./EventEmitter.js";
 
 export default class Scene {
-    static EVENT_COMPLETE = Symbol('scene complete');
+  static EVENT_COMPLETE = Symbol("scene complete");
 
-    constructor() {
-        this.events = new EventEmitter();
-        this.comp = new Compositor();
-    }
+  constructor() {
+    this.events = new EventEmitter();
+    this.comp = new Compositor();
+  }
 
-    draw(gameContext) {
-        this.comp.draw(gameContext.videoContext);
-    }
+  draw(gameContext) {
+    this.comp.draw(gameContext.videoContext);
+  }
 
-    update(gameContext) {
-    }
+  update(gameContext) {}
 
-    pause() {
-        console.log("Pause", this);
-    }
+  pause() {
+    console.log("Pause", this);
+  }
 }

@@ -1,15 +1,15 @@
-interface Vector2 {
+export interface Vector2 {
   set(x: number, y: number): void;
   x: number;
   y: number;
 }
 
-interface Entity {
+export interface Entity {
   vel: Vector2;
   pos: Vector2;
 }
 
-interface Camera {
+export interface Camera {
   pos: Vector2;
 }
 
