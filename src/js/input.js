@@ -1,4 +1,4 @@
-import Keyboard from "./KeyboardState.js";
+import Keyboard from "./KeyboardState.ts";
 import InputRouter from "./InputRouter.ts";
 import Jump from "./traits/Jump.js";
 import PipeTraveller from "./traits/PipeTraveller.js";
