@@ -2,7 +2,7 @@ import { Vec2 } from "./math.ts";
 import AudioBoard from "./AudioBoard.ts";
 import BoundingBox from "./BoundingBox.ts";
 import EventBuffer from "./EventBuffer.ts";
-import Trait from "./Trait.js";
+import Trait from "./Trait.ts";
 
 export const Align = {
   center(target, subject) {

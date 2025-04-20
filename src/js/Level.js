@@ -3,7 +3,7 @@ import MusicController from "./MusicController.js";
 import EntityCollider from "./EntityCollider.ts";
 import Scene from "./Scene.ts";
 import TileCollider from "./TileCollider.js";
-import { clamp } from "./math.js";
+import { clamp } from "./math.ts";
 import { findPlayers } from "./player.js";
 
 function focusPlayer(level) {
