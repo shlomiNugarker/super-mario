@@ -1,6 +1,6 @@
 import Camera from "./Camera.ts";
 import MusicController from "./MusicController.js";
-import EntityCollider from "./EntityCollider.js";
+import EntityCollider from "./EntityCollider.ts";
 import Scene from "./Scene.js";
 import TileCollider from "./TileCollider.js";
 import { clamp } from "./math.js";

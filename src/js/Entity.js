@@ -1,7 +1,7 @@
 import { Vec2 } from "./math.ts";
 import AudioBoard from "./AudioBoard.ts";
 import BoundingBox from "./BoundingBox.ts";
-import EventBuffer from "./EventBuffer.js";
+import EventBuffer from "./EventBuffer.ts";
 import Trait from "./Trait.js";
 
 export const Align = {
