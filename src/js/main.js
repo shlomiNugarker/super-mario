@@ -18,7 +18,7 @@ import { createDashboardLayer } from "./layers/dashboard.js";
 import { createPlayerProgressLayer } from "./layers/player-progress.js";
 import SceneRunner from "./SceneRunner.ts";
 import Scene from "./Scene.ts";
-import TimedScene from "./TimedScene.js";
+import TimedScene from "./TimedScene.ts";
 import { connectEntity } from "./traits/Pipe.js";
 
 async function main(canvas) {
