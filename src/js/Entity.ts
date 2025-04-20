@@ -2,26 +2,30 @@ import { Vec2 } from "./math.ts";
 import AudioBoard from "./AudioBoard.ts";
 import BoundingBox from "./BoundingBox.ts";
 import EventBuffer from "./EventBuffer.ts";
-import Trait from "./Trait.ts";
+import Trait, { Entity as TraitEntity } from "./Trait.ts";
+
+export interface EntityLike {
+  bounds: BoundingBox;
+}
 
 export const Align = {
-  center(target, subject) {
+  center(target: EntityLike, subject: EntityLike): void {
     subject.bounds.setCenter(target.bounds.getCenter());
   },
 
-  bottom(target, subject) {
+  bottom(target: EntityLike, subject: EntityLike): void {
     subject.bounds.bottom = target.bounds.bottom;
   },
 
-  top(target, subject) {
+  top(target: EntityLike, subject: EntityLike): void {
     subject.bounds.top = target.bounds.top;
   },
 
-  left(target, subject) {
+  left(target: EntityLike, subject: EntityLike): void {
     subject.bounds.left = target.bounds.left;
   },
 
-  right(target, subject) {
+  right(target: EntityLike, subject: EntityLike): void {
     subject.bounds.right = target.bounds.right;
   },
 };
@@ -33,7 +37,19 @@ export const Sides = {
   RIGHT: Symbol("right"),
 };
 
-export default class Entity {
+export default class Entity implements TraitEntity, EntityLike {
+  id: string | null;
+  audio: AudioBoard;
+  events: EventBuffer;
+  sounds: Set<string>;
+  pos: Vec2;
+  vel: Vec2;
+  size: Vec2;
+  offset: Vec2;
+  bounds: BoundingBox;
+  lifetime: number;
+  traits: Map<Function, Trait>;
+
   constructor() {
     this.id = null;
     this.audio = new AudioBoard();
@@ -50,23 +66,23 @@ export default class Entity {
     this.traits = new Map();
   }
 
-  addTrait(trait) {
+  addTrait(trait: Trait): void {
     this.traits.set(trait.constructor, trait);
   }
 
-  collides(candidate) {
+  collides(candidate: Entity): void {
     this.traits.forEach((trait) => {
       trait.collides(this, candidate);
     });
   }
 
-  obstruct(side, match) {
+  obstruct(side: Symbol, match: any): void {
     this.traits.forEach((trait) => {
       trait.obstruct(this, side, match);
     });
   }
 
-  finalize() {
+  finalize(): void {
     this.events.emit(Trait.EVENT_TASK, this);
 
     this.traits.forEach((trait) => {
@@ -76,7 +92,7 @@ export default class Entity {
     this.events.clear();
   }
 
-  playSounds(audioBoard, audioContext) {
+  playSounds(audioBoard: AudioBoard, audioContext: AudioContext): void {
     this.sounds.forEach((name) => {
       audioBoard.playAudio(name, audioContext);
     });
@@ -84,7 +100,7 @@ export default class Entity {
     this.sounds.clear();
   }
 
-  update(gameContext, level) {
+  update(gameContext: any, level: any): void {
     this.traits.forEach((trait) => {
       trait.update(this, gameContext, level);
     });

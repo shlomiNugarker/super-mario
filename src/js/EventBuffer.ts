@@ -1,5 +1,5 @@
 interface BufferedEvent {
-  name: string;
+  name: string | symbol;
   args: any[];
 }
 
@@ -10,12 +10,12 @@ export default class EventBuffer {
     this.events = [];
   }
 
-  emit(name: string, ...args: any[]): void {
+  emit(name: string | symbol, ...args: any[]): void {
     const event: BufferedEvent = { name, args };
     this.events.push(event);
   }
 
-  process(name: string, callback: (...args: any[]) => void): void {
+  process(name: string | symbol, callback: (...args: any[]) => void): void {
     this.events.forEach((event) => {
       if (event.name === name) {
         callback(...event.args);

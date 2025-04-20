@@ -1,5 +1,5 @@
-import { Vec2, Direction } from "../math.js";
-import { Sides, Align } from "../Entity.js";
+import { Vec2, Direction } from "../math.ts";
+import { Sides, Align } from "../Entity.ts";
 import Trait from "../Trait.ts";
 import PipeTraveller from "./PipeTraveller.js";
 

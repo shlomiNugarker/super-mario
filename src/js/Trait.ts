@@ -38,11 +38,11 @@ export default class Trait {
     // Method implementation to be provided in subclasses
   }
 
-  obstruct() {
+  obstruct(entity: Entity, side: Symbol, match: any) {
     // Method implementation to be provided in subclasses
   }
 
-  update() {
+  update(entity: Entity, gameContext: any, level: any) {
     // Method implementation to be provided in subclasses
   }
 }
