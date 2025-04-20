@@ -1,6 +1,6 @@
 import Entity from "../Entity.js";
 import Trait from "../Trait.ts";
-import Killable from "../traits/Killable.js";
+import Killable from "../traits/Killable.ts";
 import PendulumMove from "../traits/PendulumMove.js";
 import Physics from "../traits/Physics.js";
 import Solid from "../traits/Solid.js";

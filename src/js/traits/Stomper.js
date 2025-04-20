@@ -1,5 +1,5 @@
 import Trait from "../Trait.ts";
-import Killable from "./Killable.js";
+import Killable from "./Killable.ts";
 
 export default class Stomper extends Trait {
   static EVENT_STOMP = Symbol("stomp");
