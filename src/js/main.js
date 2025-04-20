@@ -1,5 +1,5 @@
 import Level from "./Level.js";
-import Timer from "./Timer.js";
+import Timer from "./Timer.ts";
 import Pipe from "./traits/Pipe.js";
 import { createLevelLoader } from "./loaders/level.js";
 import { loadFont } from "./loaders/font.js";
