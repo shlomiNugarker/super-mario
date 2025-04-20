@@ -8,7 +8,7 @@ interface GameContext {
 }
 
 export default class Scene {
-  static readonly EVENT_COMPLETE: symbol = Symbol("scene complete");
+  static readonly EVENT_COMPLETE: string = "scene complete";
 
   protected events: EventEmitter;
   protected comp: Compositor;
@@ -26,5 +26,15 @@ export default class Scene {
 
   pause(): void {
     console.log("Pause", this);
+  }
+
+  // Method to register a completion handler
+  onComplete(callback: () => void): void {
+    this.events.listen(Scene.EVENT_COMPLETE, callback);
+  }
+
+  // Method to trigger completion
+  complete(): void {
+    this.events.emit(Scene.EVENT_COMPLETE);
   }
 }

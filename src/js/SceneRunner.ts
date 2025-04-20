@@ -1,19 +1,25 @@
-import Scene from "./Scene.ts";
+import Scene from "./Scene";
+
+interface GameContext {
+  videoContext: CanvasRenderingContext2D;
+  camera: any;
+}
 
 export default class SceneRunner {
+  private sceneIndex: number;
+  private scenes: Scene[];
+
   constructor() {
     this.sceneIndex = -1;
     this.scenes = [];
   }
 
-  addScene(scene) {
-    scene.events.listen(Scene.EVENT_COMPLETE, () => {
-      this.runNext();
-    });
+  addScene(scene: Scene): void {
+    scene.onComplete(() => this.runNext());
     this.scenes.push(scene);
   }
 
-  runNext() {
+  runNext(): void {
     const currentScene = this.scenes[this.sceneIndex];
     if (currentScene) {
       currentScene.pause();
@@ -21,7 +27,7 @@ export default class SceneRunner {
     this.sceneIndex++;
   }
 
-  update(gameContext) {
+  update(gameContext: GameContext): void {
     const currentScene = this.scenes[this.sceneIndex];
     if (currentScene) {
       currentScene.update(gameContext);
