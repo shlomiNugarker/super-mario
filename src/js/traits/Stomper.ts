@@ -1,21 +1,24 @@
 import Trait from "../Trait.ts";
 import Killable from "./Killable.ts";
+import Entity from "../Entity.ts";
 
 export default class Stomper extends Trait {
   static EVENT_STOMP = Symbol("stomp");
+  bounceSpeed: number;
 
   constructor() {
     super();
     this.bounceSpeed = 400;
   }
 
-  bounce(us, them) {
+  bounce(us: Entity, them: Entity): void {
     us.bounds.bottom = them.bounds.top;
     us.vel.y = -this.bounceSpeed;
   }
 
-  collides(us, them) {
-    if (!them.traits.has(Killable) || them.traits.get(Killable).dead) {
+  collides(us: Entity, them: Entity): void {
+    const killable = them.traits.get(Killable) as Killable | undefined;
+    if (!killable || killable.dead) {
       return;
     }
 

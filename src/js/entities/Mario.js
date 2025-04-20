@@ -6,7 +6,7 @@ import Physics from "../traits/Physics.js";
 import PipeTraveller from "../traits/PipeTraveller.js";
 import PoleTraveller from "../traits/PoleTraveller.js";
 import Solid from "../traits/Solid.js";
-import Stomper from "../traits/Stomper.js";
+import Stomper from "../traits/Stomper.ts";
 import { loadAudioBoard } from "../loaders/audio.ts";
 import { loadSpriteSheet } from "../loaders/sprite.ts";
 

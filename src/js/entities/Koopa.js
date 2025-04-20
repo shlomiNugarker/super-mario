@@ -4,7 +4,7 @@ import Killable from "../traits/Killable.ts";
 import PendulumMove from "../traits/PendulumMove.js";
 import Physics from "../traits/Physics.js";
 import Solid from "../traits/Solid.js";
-import Stomper from "../traits/Stomper.js";
+import Stomper from "../traits/Stomper.ts";
 import { loadSpriteSheet } from "../loaders/sprite.ts";
 
 export function loadKoopaGreen() {

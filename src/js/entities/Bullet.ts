@@ -2,7 +2,7 @@ import Entity from "../Entity.ts";
 import Trait from "../Trait.ts";
 import Killable from "../traits/Killable.ts";
 import Gravity from "../traits/Gravity.ts";
-import Stomper from "../traits/Stomper.js";
+import Stomper from "../traits/Stomper.ts";
 import Velocity from "../traits/Velocity.ts";
 import { loadSpriteSheet } from "../loaders/sprite.ts";
 

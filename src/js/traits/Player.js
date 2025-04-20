@@ -1,5 +1,5 @@
 import Trait from "../Trait.ts";
-import Stomper from "../traits/Stomper.js";
+import Stomper from "../traits/Stomper.ts";
 
 const COIN_LIFE_THRESHOLD = 100;
 
