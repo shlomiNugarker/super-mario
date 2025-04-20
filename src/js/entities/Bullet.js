@@ -1,7 +1,7 @@
 import Entity from "../Entity.js";
 import Trait from "../Trait.ts";
 import Killable from "../traits/Killable.js";
-import Gravity from "../traits/Gravity.js";
+import Gravity from "../traits/Gravity.ts";
 import Stomper from "../traits/Stomper.js";
 import Velocity from "../traits/Velocity.js";
 import { loadSpriteSheet } from "../loaders/sprite.js";
