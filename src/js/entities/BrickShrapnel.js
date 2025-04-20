@@ -1,5 +1,5 @@
 import Entity from "../Entity.ts";
-import LifeLimit from "../traits/LifeLimit.js";
+import LifeLimit from "../traits/LifeLimit.ts";
 import Gravity from "../traits/Gravity.js";
 import Velocity from "../traits/Velocity.js";
 import { loadAudioBoard } from "../loaders/audio.js";
