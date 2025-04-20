@@ -1,6 +1,6 @@
-import { Vec2 } from "./math.js";
+import { Vec2 } from "./math.ts";
 import AudioBoard from "./AudioBoard.ts";
-import BoundingBox from "./BoundingBox.js";
+import BoundingBox from "./BoundingBox.ts";
 import EventBuffer from "./EventBuffer.js";
 import Trait from "./Trait.js";
 
