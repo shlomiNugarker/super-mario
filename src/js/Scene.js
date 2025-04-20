@@ -1,5 +1,5 @@
 import Compositor from "./Compositor.ts";
-import EventEmitter from "./EventEmitter.js";
+import EventEmitter from "./EventEmitter.ts";
 
 export default class Scene {
   static EVENT_COMPLETE = Symbol("scene complete");
