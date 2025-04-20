@@ -2,7 +2,7 @@ import { loadMario } from "./entities/Mario.js";
 import { loadGoombaBrown, loadGoombaBlue } from "./entities/Goomba.js";
 import { loadKoopaGreen, loadKoopaBlue } from "./entities/Koopa.js";
 import { loadPiranhaPlant } from "./entities/PiranhaPlant.js";
-import { loadBullet } from "./entities/Bullet.js";
+import { loadBullet } from "./entities/Bullet.ts";
 import { loadCannon } from "./entities/Cannon.js";
 import { loadBrickShrapnel } from "./entities/BrickShrapnel.ts";
 import { loadPipePortal } from "./entities/PipePortal.js";
