@@ -1,5 +1,5 @@
 import Player from "../traits/Player.ts";
-import LevelTimer from "../traits/LevelTimer.js";
+import LevelTimer from "../traits/LevelTimer.ts";
 import { findPlayers } from "../player.js";
 
 export function createDashboardLayer(font, entity) {
