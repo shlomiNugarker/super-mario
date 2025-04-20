@@ -1,5 +1,5 @@
-import Entity from "../Entity.js";
-import Emitter from "../traits/Emitter.js";
+import Entity from "../Entity.ts";
+import Emitter from "../traits/Emitter.ts";
 import { findPlayers } from "../player.js";
 import { loadAudioBoard } from "../loaders/audio.ts";
 
