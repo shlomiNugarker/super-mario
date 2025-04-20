@@ -4,8 +4,10 @@ import Gravity from "../traits/Gravity.ts";
 import Velocity from "../traits/Velocity.ts";
 import { loadAudioBoard } from "../loaders/audio.ts";
 import { loadSpriteSheet } from "../loaders/sprite.ts";
+import SpriteSheet from "../SpriteSheet.ts";
+import AudioBoard from "../AudioBoard.ts";
 
-export function loadBrickShrapnel(audioContext) {
+export function loadBrickShrapnel(audioContext: AudioContext) {
   return Promise.all([
     loadSpriteSheet("brick-shrapnel"),
     loadAudioBoard("brick-shrapnel", audioContext),
@@ -14,11 +16,9 @@ export function loadBrickShrapnel(audioContext) {
   });
 }
 
-function createFactory(sprite, audio) {
-  const spinBrick = sprite.animations.get("spinning-brick");
-
-  function draw(context) {
-    sprite.draw(spinBrick(this.lifetime), context, 0, 0);
+function createFactory(sprite: SpriteSheet, audio: AudioBoard) {
+  function draw(this: Entity, context: CanvasRenderingContext2D) {
+    sprite.drawAnim("spinning-brick", context, 0, 0, this.lifetime);
   }
 
   return function createBrickShrapnel() {
@@ -28,7 +28,7 @@ function createFactory(sprite, audio) {
     entity.addTrait(new LifeLimit());
     entity.addTrait(new Gravity());
     entity.addTrait(new Velocity());
-    entity.draw = draw;
+    (entity as any).draw = draw;
     return entity;
   };
 }
