@@ -3,7 +3,7 @@ import Trait from "../Trait.ts";
 import Killable from "../traits/Killable.js";
 import Gravity from "../traits/Gravity.ts";
 import Stomper from "../traits/Stomper.js";
-import Velocity from "../traits/Velocity.js";
+import Velocity from "../traits/Velocity.ts";
 import { loadSpriteSheet } from "../loaders/sprite.js";
 
 export function loadBullet() {

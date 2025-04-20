@@ -1,7 +1,7 @@
 import Entity from "../Entity.ts";
 import LifeLimit from "../traits/LifeLimit.ts";
 import Gravity from "../traits/Gravity.ts";
-import Velocity from "../traits/Velocity.js";
+import Velocity from "../traits/Velocity.ts";
 import { loadAudioBoard } from "../loaders/audio.js";
 import { loadSpriteSheet } from "../loaders/sprite.js";
 
