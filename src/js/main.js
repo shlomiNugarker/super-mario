@@ -17,7 +17,7 @@ import { createCollisionLayer } from "./layers/collision.js";
 import { createDashboardLayer } from "./layers/dashboard.js";
 import { createPlayerProgressLayer } from "./layers/player-progress.js";
 import SceneRunner from "./SceneRunner.js";
-import Scene from "./Scene.js";
+import Scene from "./Scene.ts";
 import TimedScene from "./TimedScene.js";
 import { connectEntity } from "./traits/Pipe.js";
 

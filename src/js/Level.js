@@ -1,7 +1,7 @@
 import Camera from "./Camera.ts";
 import MusicController from "./MusicController.js";
 import EntityCollider from "./EntityCollider.ts";
-import Scene from "./Scene.js";
+import Scene from "./Scene.ts";
 import TileCollider from "./TileCollider.js";
 import { clamp } from "./math.js";
 import { findPlayers } from "./player.js";
