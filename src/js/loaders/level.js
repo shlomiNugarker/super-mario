@@ -2,7 +2,7 @@ import { Matrix, Vec2 } from "../math.js";
 import Entity from "../Entity.js";
 import Trait from "../Trait.ts";
 import LevelTimer from "../traits/LevelTimer.ts";
-import Trigger from "../traits/Trigger.js";
+import Trigger from "../traits/Trigger.ts";
 import Level from "../Level.js";
 import { createSpriteLayer } from "../layers/sprites.js";
 import { createBackgroundLayer } from "../layers/background.js";
