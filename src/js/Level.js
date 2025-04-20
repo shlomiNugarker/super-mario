@@ -1,5 +1,5 @@
 import Camera from "./Camera.ts";
-import MusicController from "./MusicController.js";
+import MusicController from "./MusicController.ts";
 import EntityCollider from "./EntityCollider.ts";
 import Scene from "./Scene.ts";
 import TileCollider from "./TileCollider.js";
