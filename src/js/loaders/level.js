@@ -5,7 +5,7 @@ import LevelTimer from '../traits/LevelTimer.ts';
 import Trigger from '../traits/Trigger.ts';
 import Level from '../Level.ts';
 import { createSpriteLayer } from '../layers/sprites.js';
-import { createBackgroundLayer } from '../layers/background.js';
+import { createBackgroundLayer } from '../layers/background.ts';
 import { loadMusicSheet } from './music.js';
 import { loadSpriteSheet } from './sprite.ts';
 import { loadJSON } from '../loaders.ts';
