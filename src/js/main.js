@@ -1,4 +1,4 @@
-import Level from './Level.js';
+import Level from './Level.ts';
 import Timer from './Timer.ts';
 import Pipe from './traits/Pipe.js';
 import { createLevelLoader } from './loaders/level.js';

@@ -3,7 +3,7 @@ import Entity from '../Entity.js';
 import Trait from '../Trait.ts';
 import LevelTimer from '../traits/LevelTimer.ts';
 import Trigger from '../traits/Trigger.ts';
-import Level from '../Level.js';
+import Level from '../Level.ts';
 import { createSpriteLayer } from '../layers/sprites.js';
 import { createBackgroundLayer } from '../layers/background.js';
 import { loadMusicSheet } from './music.js';
