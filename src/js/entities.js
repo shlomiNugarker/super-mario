@@ -6,7 +6,7 @@ import { loadBullet } from './entities/Bullet.ts';
 import { loadCannon } from './entities/Cannon.ts';
 import { loadBrickShrapnel } from './entities/BrickShrapnel.ts';
 import { loadPipePortal } from './entities/PipePortal.js';
-import { loadFlagPole } from './entities/FlagPole.js';
+import { loadFlagPole } from './entities/FlagPole.ts';
 
 function createPool(size) {
   const pool = [];
