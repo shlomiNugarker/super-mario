@@ -1,6 +1,6 @@
 import Entity from '../Entity.ts';
 import Go from '../traits/Go.ts';
-import Jump from '../traits/Jump.js';
+import Jump from '../traits/Jump.ts';
 import Killable from '../traits/Killable.ts';
 import Physics from '../traits/Physics.ts';
 import PipeTraveller from '../traits/PipeTraveller.js';

@@ -1,7 +1,25 @@
-import { Sides } from '../Entity.js';
-import Trait from '../Trait.ts';
+import { Sides } from '../Entity.ts';
+import Trait, { Entity } from '../Trait.ts';
+
+interface GameEntity extends Entity {
+  sounds: {
+    add(name: string): void;
+  };
+  vel: {
+    x: number;
+    y: number;
+  };
+}
 
 export default class Jump extends Trait {
+  ready: number;
+  duration: number;
+  engageTime: number;
+  requestTime: number;
+  gracePeriod: number;
+  speedBoost: number;
+  velocity: number;
+
   constructor() {
     super();
 
@@ -14,20 +32,20 @@ export default class Jump extends Trait {
     this.velocity = 200;
   }
 
-  get falling() {
+  get falling(): boolean {
     return this.ready < 0;
   }
 
-  start() {
+  start(): void {
     this.requestTime = this.gracePeriod;
   }
 
-  cancel() {
+  cancel(): void {
     this.engageTime = 0;
     this.requestTime = 0;
   }
 
-  obstruct(entity, side) {
+  obstruct(entity: GameEntity, side: symbol): void {
     if (side === Sides.BOTTOM) {
       this.ready = 1;
     } else if (side === Sides.TOP) {
@@ -35,7 +53,9 @@ export default class Jump extends Trait {
     }
   }
 
-  update(entity, { deltaTime }, level) {
+  update(entity: GameEntity, gameContext: { deltaTime: number }, level: any): void {
+    const { deltaTime } = gameContext;
+
     if (this.requestTime > 0) {
       if (this.ready > 0) {
         entity.sounds.add('jump');
