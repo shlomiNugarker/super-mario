@@ -1,6 +1,6 @@
 import Level from './Level.ts';
 import Timer from './Timer.ts';
-import Pipe from './traits/Pipe.js';
+import Pipe from './traits/Pipe.ts';
 import { createLevelLoader } from './loaders/level.js';
 import { loadFont } from './loaders/font.js';
 import { loadEntities } from './entities.ts';

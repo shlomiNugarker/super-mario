@@ -2,17 +2,39 @@ import { Vec2, Direction } from '../math.ts';
 import { Sides, Align } from '../Entity.ts';
 import Trait from '../Trait.ts';
 import PipeTraveller from './PipeTraveller.ts';
+import Entity from '../Entity.ts';
 
-function createTravellerState() {
+interface TravellerState {
+  time: number;
+  start: Vec2;
+  end: Vec2;
+}
+
+interface GameContext {
+  deltaTime: number;
+  audioContext: AudioContext;
+}
+
+interface LevelEvents {
+  emit(name: symbol, pipe: Entity, traveller: Entity): void;
+}
+
+interface Level {
+  events: LevelEvents;
+}
+
+function createTravellerState(): TravellerState {
   return {
     time: 0,
-    start: new Vec2(),
-    end: new Vec2(),
+    start: new Vec2(0, 0),
+    end: new Vec2(0, 0),
   };
 }
 
-export function connectEntity(pipeEntity, travellerEntity) {
-  const pipeTrait = pipeEntity.traits.get(Pipe);
+export function connectEntity(pipeEntity: Entity, travellerEntity: Entity): void {
+  const pipeTrait = pipeEntity.traits.get(Pipe) as Pipe | undefined;
+  if (!pipeTrait) return;
+
   Align.center(pipeEntity, travellerEntity);
   if (pipeTrait.direction.equals(Direction.UP)) {
     Align.bottom(pipeEntity, travellerEntity);
@@ -29,6 +51,10 @@ export function connectEntity(pipeEntity, travellerEntity) {
 export default class Pipe extends Trait {
   static EVENT_PIPE_COMPLETE = Symbol('pipe complete');
 
+  private duration: number;
+  direction: Vec2;
+  private travellers: Map<Entity, TravellerState>;
+
   constructor() {
     super();
     this.duration = 1;
@@ -36,8 +62,8 @@ export default class Pipe extends Trait {
     this.travellers = new Map();
   }
 
-  addTraveller(pipe, traveller) {
-    const pipeTraveller = traveller.traits.get(PipeTraveller);
+  addTraveller(pipe: Entity, traveller: Entity): void {
+    const pipeTraveller = traveller.traits.get(PipeTraveller) as PipeTraveller;
     pipeTraveller.distance.set(0, 0);
 
     const state = createTravellerState();
@@ -48,7 +74,7 @@ export default class Pipe extends Trait {
     this.travellers.set(traveller, state);
   }
 
-  collides(pipe, traveller) {
+  collides(pipe: Entity, traveller: Entity): void {
     if (!traveller.traits.has(PipeTraveller)) {
       return;
     }
@@ -57,7 +83,8 @@ export default class Pipe extends Trait {
       return;
     }
 
-    if (traveller.traits.get(PipeTraveller).direction.equals(this.direction)) {
+    const pipeTraveller = traveller.traits.get(PipeTraveller) as PipeTraveller;
+    if (pipeTraveller.direction.equals(this.direction)) {
       const tBounds = traveller.bounds;
       const pBounds = pipe.bounds;
       if (this.direction.x && (tBounds.top < pBounds.top || tBounds.bottom > pBounds.bottom)) {
@@ -71,7 +98,7 @@ export default class Pipe extends Trait {
     }
   }
 
-  update(pipe, gameContext, level) {
+  update(pipe: Entity, gameContext: GameContext, level: Level): void {
     const { deltaTime } = gameContext;
     for (const [traveller, state] of this.travellers.entries()) {
       state.time += deltaTime;
@@ -80,7 +107,7 @@ export default class Pipe extends Trait {
       traveller.pos.y = state.start.y + (state.end.y - state.start.y) * progress;
       traveller.vel.set(0, 0);
 
-      const pipeTraveller = traveller.traits.get(PipeTraveller);
+      const pipeTraveller = traveller.traits.get(PipeTraveller) as PipeTraveller;
       pipeTraveller.movement.copy(this.direction);
       pipeTraveller.distance.x = traveller.pos.x - state.start.x;
       pipeTraveller.distance.y = traveller.pos.y - state.start.y;
