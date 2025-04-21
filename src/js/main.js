@@ -2,7 +2,7 @@ import Level from './Level.ts';
 import Timer from './Timer.ts';
 import Pipe from './traits/Pipe.ts';
 import { createLevelLoader } from './loaders/level.js';
-import { loadFont } from './loaders/font.js';
+import { loadFont } from './loaders/font.ts';
 import { loadEntities } from './entities.ts';
 import { makePlayer, bootstrapPlayer, resetPlayer, findPlayers } from './player.js';
 import { setupKeyboard } from './input.ts';

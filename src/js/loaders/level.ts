@@ -1,12 +1,12 @@
-import { Matrix, Vec2 } from '../math.js';
-import Entity from '../Entity.js';
+import { Matrix, Vec2 } from '../math.ts';
+import Entity from '../Entity.ts';
 import Trait from '../Trait.ts';
 import LevelTimer from '../traits/LevelTimer.ts';
 import Trigger from '../traits/Trigger.ts';
 import Level from '../Level.ts';
 import { createSpriteLayer } from '../layers/sprites.ts';
 import { createBackgroundLayer } from '../layers/background.ts';
-import { loadMusicSheet } from './music.js';
+import { loadMusicSheet } from './music.ts';
 import { loadSpriteSheet } from './sprite.ts';
 import { loadJSON } from '../loaders.ts';
 
