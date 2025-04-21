@@ -6,7 +6,7 @@ import { loadFont } from './loaders/font.js';
 import { loadEntities } from './entities.ts';
 import { makePlayer, bootstrapPlayer, resetPlayer, findPlayers } from './player.js';
 import { setupKeyboard } from './input.ts';
-import { createColorLayer } from './layers/color.js';
+import { createColorLayer } from './layers/color.ts';
 import { createTextLayer } from './layers/text.js';
 import { createCollisionLayer } from './layers/collision.ts';
 import { createDashboardLayer } from './layers/dashboard.js';
