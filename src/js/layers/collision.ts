@@ -1,5 +1,10 @@
-function createEntityLayer(entities) {
-  return function drawBoundingBox(context, camera) {
+import Entity from '../Entity.ts';
+import Camera from '../Camera.ts';
+import TileResolver from '../TileResolver.ts';
+import Level from '../Level.ts';
+
+function createEntityLayer(entities: Set<Entity>): any {
+  return function drawBoundingBox(context: CanvasRenderingContext2D, camera: Camera): void {
     context.strokeStyle = 'red';
     entities.forEach((entity) => {
       context.beginPath();
@@ -14,18 +19,23 @@ function createEntityLayer(entities) {
   };
 }
 
-function createTileCandidateLayer(tileResolver) {
-  const resolvedTiles = [];
+interface TilePosition {
+  x: number;
+  y: number;
+}
+
+function createTileCandidateLayer(tileResolver: TileResolver): any {
+  const resolvedTiles: TilePosition[] = [];
 
   const tileSize = tileResolver.tileSize;
 
   const getByIndexOriginal = tileResolver.getByIndex;
-  tileResolver.getByIndex = function getByIndexFake(x, y) {
+  tileResolver.getByIndex = function getByIndexFake(x: number, y: number) {
     resolvedTiles.push({ x, y });
     return getByIndexOriginal.call(tileResolver, x, y);
   };
 
-  return function drawTileCandidates(context, camera) {
+  return function drawTileCandidates(context: CanvasRenderingContext2D, camera: Camera): void {
     context.strokeStyle = 'blue';
     resolvedTiles.forEach(({ x, y }) => {
       context.beginPath();
@@ -37,12 +47,12 @@ function createTileCandidateLayer(tileResolver) {
   };
 }
 
-export function createCollisionLayer(level) {
+export function createCollisionLayer(level: Level): any {
   const drawTileCandidates = level.tileCollider.resolvers.map(createTileCandidateLayer);
   const drawBoundingBoxes = createEntityLayer(level.entities);
 
-  return function drawCollision(context, camera) {
-    drawTileCandidates.forEach((draw) => draw(context, camera));
+  return function drawCollision(context: CanvasRenderingContext2D, camera: Camera): void {
+    drawTileCandidates.forEach((draw: any) => draw(context, camera));
     drawBoundingBoxes(context, camera);
   };
 }

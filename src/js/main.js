@@ -8,7 +8,7 @@ import { makePlayer, bootstrapPlayer, resetPlayer, findPlayers } from './player.
 import { setupKeyboard } from './input.ts';
 import { createColorLayer } from './layers/color.js';
 import { createTextLayer } from './layers/text.js';
-import { createCollisionLayer } from './layers/collision.js';
+import { createCollisionLayer } from './layers/collision.ts';
 import { createDashboardLayer } from './layers/dashboard.js';
 import { createPlayerProgressLayer } from './layers/player-progress.js';
 import SceneRunner from './SceneRunner.ts';
