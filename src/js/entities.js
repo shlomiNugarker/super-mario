@@ -3,7 +3,7 @@ import { loadGoombaBrown, loadGoombaBlue } from './entities/Goomba.js';
 import { loadKoopaGreen, loadKoopaBlue } from './entities/Koopa.js';
 import { loadPiranhaPlant } from './entities/PiranhaPlant.js';
 import { loadBullet } from './entities/Bullet.ts';
-import { loadCannon } from './entities/Cannon.js';
+import { loadCannon } from './entities/Cannon.ts';
 import { loadBrickShrapnel } from './entities/BrickShrapnel.ts';
 import { loadPipePortal } from './entities/PipePortal.js';
 import { loadFlagPole } from './entities/FlagPole.js';

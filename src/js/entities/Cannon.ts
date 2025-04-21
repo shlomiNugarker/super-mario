@@ -1,18 +1,23 @@
 import Entity from '../Entity.ts';
 import Emitter from '../traits/Emitter.ts';
-import { findPlayers } from '../player.js';
+import { findPlayers } from '../player.ts';
 import { loadAudioBoard } from '../loaders/audio.ts';
+import AudioBoard from '../AudioBoard.ts';
 
 const HOLD_FIRE_THRESHOLD = 30;
 
-export function loadCannon(audioContext) {
+export function loadCannon(audioContext: AudioContext): Promise<() => Entity> {
   return loadAudioBoard('cannon', audioContext).then((audio) => {
     return createCannonFactory(audio);
   });
 }
 
-function createCannonFactory(audio) {
-  function emitBullet(cannon, gameContext, level) {
+function createCannonFactory(audio: AudioBoard) {
+  function emitBullet(
+    cannon: Entity,
+    gameContext: { entityFactory: any; audioContext: AudioContext; deltaTime: number },
+    level: { entities: any }
+  ) {
     let dir = 1;
     for (const player of findPlayers(level.entities)) {
       if (
@@ -36,13 +41,13 @@ function createCannonFactory(audio) {
     level.entities.add(bullet);
   }
 
-  return function createCannon() {
+  return function createCannon(): Entity {
     const cannon = new Entity();
     cannon.audio = audio;
 
     const emitter = new Emitter();
-    emitter.interval = 4;
-    emitter.emitters.push(emitBullet);
+    emitter.setInterval(4);
+    emitter.addEmitter(emitBullet);
     cannon.addTrait(emitter);
     return cannon;
   };

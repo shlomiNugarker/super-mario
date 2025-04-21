@@ -4,7 +4,7 @@ import { Entity } from '../Trait.ts';
 export default class Emitter extends Trait {
   private interval: number;
   private coolDown: number;
-  private emitters: any[];
+  private emitters: ((entity: Entity, gameContext: any, level: any) => void)[];
 
   constructor() {
     super();
@@ -26,5 +26,18 @@ export default class Emitter extends Trait {
       this.emit(entity, gameContext, level);
       this.coolDown = this.interval;
     }
+  }
+
+  // Add accessor methods
+  setInterval(interval: number): void {
+    this.interval = interval;
+  }
+
+  getInterval(): number {
+    return this.interval;
+  }
+
+  addEmitter(emitter: (entity: any, gameContext: any, level: any) => void): void {
+    this.emitters.push(emitter);
   }
 }
