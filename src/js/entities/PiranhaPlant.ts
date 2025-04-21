@@ -1,13 +1,26 @@
-import Entity from '../Entity.js';
-import Trait from '../Trait.ts';
+import Entity from '../Entity.ts';
+import Trait, { Entity as TraitEntity } from '../Trait.ts';
 import { loadSpriteSheet } from '../loaders/sprite.ts';
-import { findPlayers } from '../player.js';
+import { findPlayers } from '../player.ts';
+import SpriteSheet from '../SpriteSheet.ts';
 
 export function loadPiranhaPlant() {
   return loadSpriteSheet('piranha-plant').then(createPiranhaPlantFactory);
 }
 
 class Behavior extends Trait {
+  graceDistance: number;
+  idleTime: number;
+  idleCounter: number | null;
+  attackTime: number;
+  attackCounter: number | null;
+  holdTime: number;
+  holdCounter: number | null;
+  retreatTime: number;
+  retreatCounter: number | null;
+  velocity: number;
+  deltaMove: number;
+
   constructor() {
     super();
 
@@ -26,7 +39,7 @@ class Behavior extends Trait {
     this.deltaMove = 0;
   }
 
-  update(entity, gameContext, level) {
+  update(entity: Entity, gameContext: any, level: any): void {
     const { deltaTime } = gameContext;
 
     if (this.idleCounter !== null) {
@@ -73,14 +86,14 @@ class Behavior extends Trait {
   }
 }
 
-function createPiranhaPlantFactory(sprite) {
-  const chewAnim = sprite.animations.get('chew');
+function createPiranhaPlantFactory(sprite: SpriteSheet) {
+  const chewAnim = (sprite as any).animations.get('chew');
 
-  function routeAnim(entity) {
+  function routeAnim(entity: { lifetime: number }) {
     return chewAnim(entity.lifetime);
   }
 
-  function drawPiranhaPlant(context) {
+  function drawPiranhaPlant(this: Entity, context: CanvasRenderingContext2D) {
     sprite.draw(routeAnim(this), context, 0, 0);
   }
 
@@ -90,7 +103,7 @@ function createPiranhaPlantFactory(sprite) {
 
     entity.addTrait(new Behavior());
 
-    entity.draw = drawPiranhaPlant;
+    (entity as any).draw = drawPiranhaPlant;
 
     return entity;
   };

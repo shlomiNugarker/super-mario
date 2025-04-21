@@ -3,7 +3,7 @@ import Timer from './Timer.ts';
 import Pipe from './traits/Pipe.js';
 import { createLevelLoader } from './loaders/level.js';
 import { loadFont } from './loaders/font.js';
-import { loadEntities } from './entities.js';
+import { loadEntities } from './entities.ts';
 import { makePlayer, bootstrapPlayer, resetPlayer, findPlayers } from './player.js';
 import { setupKeyboard } from './input.ts';
 import { createColorLayer } from './layers/color.js';

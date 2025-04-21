@@ -1,23 +1,32 @@
-import { loadMario } from './entities/Mario.js';
 import { loadGoombaBrown, loadGoombaBlue } from './entities/Goomba.ts';
 import { loadKoopaGreen, loadKoopaBlue } from './entities/Koopa.ts';
-import { loadPiranhaPlant } from './entities/PiranhaPlant.js';
+import { loadPiranhaPlant } from './entities/PiranhaPlant.ts';
 import { loadBullet } from './entities/Bullet.ts';
 import { loadCannon } from './entities/Cannon.ts';
 import { loadBrickShrapnel } from './entities/BrickShrapnel.ts';
 import { loadPipePortal } from './entities/PipePortal.js';
 import { loadFlagPole } from './entities/FlagPole.ts';
+import { loadMario } from './entities/Mario.ts';
 
-function createPool(size) {
-  const pool = [];
+// Define entity type interfaces
+interface Entity {
+  lifetime: number;
+  [key: string]: any;
+}
 
-  return function createPooledFactory(factory) {
+type EntityFactory = () => Entity;
+type EntityFactories = Record<string, EntityFactory>;
+
+function createPool(size: number) {
+  const pool: Entity[] = [];
+
+  return function createPooledFactory(factory: EntityFactory): EntityFactory {
     for (let i = 0; i < size; i++) {
       pool.push(factory());
     }
 
     let count = 0;
-    return function pooledFactory() {
+    return function pooledFactory(): Entity {
       const entity = pool[count++ % pool.length];
       entity.lifetime = 0;
       return entity;
@@ -25,15 +34,15 @@ function createPool(size) {
   };
 }
 
-export async function loadEntities(audioContext) {
-  const entityFactories = {};
+export async function loadEntities(audioContext: AudioContext): Promise<EntityFactories> {
+  const entityFactories: EntityFactories = {};
 
-  function setup(loader) {
+  function setup(loader: (context: AudioContext) => Promise<EntityFactory>) {
     return loader(audioContext);
   }
 
-  function addAs(name) {
-    return function addFactory(factory) {
+  function addAs(name: string) {
+    return function addFactory(factory: EntityFactory): void {
       entityFactories[name] = factory;
     };
   }

@@ -1,5 +1,5 @@
-import { Direction } from '../math.js';
-import Entity from '../Entity.js';
+import { Direction } from '../math.ts';
+import Entity from '../Entity.ts';
 import Pipe from '../traits/Pipe.js';
 import { loadAudioBoard } from '../loaders/audio.ts';
 
