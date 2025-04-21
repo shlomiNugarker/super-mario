@@ -5,7 +5,7 @@ import { createLevelLoader } from './loaders/level.js';
 import { loadFont } from './loaders/font.js';
 import { loadEntities } from './entities.js';
 import { makePlayer, bootstrapPlayer, resetPlayer, findPlayers } from './player.js';
-import { setupKeyboard } from './input.js';
+import { setupKeyboard } from './input.ts';
 import { createColorLayer } from './layers/color.js';
 import { createTextLayer } from './layers/text.js';
 import { createCollisionLayer } from './layers/collision.js';
