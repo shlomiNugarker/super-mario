@@ -2,7 +2,7 @@ import Keyboard from './KeyboardState.ts';
 import InputRouter from './InputRouter.ts';
 import Jump from './traits/Jump.js';
 import PipeTraveller from './traits/PipeTraveller.js';
-import Go from './traits/Go.js';
+import Go from './traits/Go.ts';
 
 const KEYMAP = {
   UP: 'KeyW',

@@ -1,5 +1,5 @@
-import Entity from '../Entity.js';
-import Go from '../traits/Go.js';
+import Entity from '../Entity.ts';
+import Go from '../traits/Go.ts';
 import Jump from '../traits/Jump.js';
 import Killable from '../traits/Killable.ts';
 import Physics from '../traits/Physics.ts';

@@ -1,6 +1,14 @@
 import Trait from '../Trait.ts';
+import Entity from '../Entity.ts';
 
 export default class Go extends Trait {
+  dir: number;
+  acceleration: number;
+  deceleration: number;
+  dragFactor: number;
+  distance: number;
+  heading: number;
+
   constructor() {
     super();
 
@@ -13,14 +21,14 @@ export default class Go extends Trait {
     this.heading = 1;
   }
 
-  update(entity, { deltaTime }) {
+  update(entity: Entity, { deltaTime }: { deltaTime: number }): void {
     const absX = Math.abs(entity.vel.x);
 
     if (this.dir !== 0) {
       entity.vel.x += this.acceleration * deltaTime * this.dir;
 
-      if (entity.jump) {
-        if (entity.jump.falling === false) {
+      if ((entity as any).jump) {
+        if ((entity as any).jump.falling === false) {
           this.heading = this.dir;
         }
       } else {
