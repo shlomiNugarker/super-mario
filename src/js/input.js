@@ -1,7 +1,7 @@
 import Keyboard from './KeyboardState.ts';
 import InputRouter from './InputRouter.ts';
 import Jump from './traits/Jump.ts';
-import PipeTraveller from './traits/PipeTraveller.js';
+import PipeTraveller from './traits/PipeTraveller.ts';
 import Go from './traits/Go.ts';
 
 const KEYMAP = {

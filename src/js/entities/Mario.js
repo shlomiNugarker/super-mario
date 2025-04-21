@@ -3,7 +3,7 @@ import Go from '../traits/Go.ts';
 import Jump from '../traits/Jump.ts';
 import Killable from '../traits/Killable.ts';
 import Physics from '../traits/Physics.ts';
-import PipeTraveller from '../traits/PipeTraveller.js';
+import PipeTraveller from '../traits/PipeTraveller.ts';
 import PoleTraveller from '../traits/PoleTraveller.ts';
 import Solid from '../traits/Solid.ts';
 import Stomper from '../traits/Stomper.ts';

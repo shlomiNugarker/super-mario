@@ -1,7 +1,7 @@
 import { Vec2, Direction } from '../math.ts';
 import { Sides, Align } from '../Entity.ts';
 import Trait from '../Trait.ts';
-import PipeTraveller from './PipeTraveller.js';
+import PipeTraveller from './PipeTraveller.ts';
 
 function createTravellerState() {
   return {
