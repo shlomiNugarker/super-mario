@@ -1,5 +1,5 @@
 import TileResolver from './TileResolver.ts';
-import { brick } from './tiles/brick.js';
+import { brick } from './tiles/brick.ts';
 import { coin } from './tiles/coin.js';
 import { ground } from './tiles/ground.js';
 
