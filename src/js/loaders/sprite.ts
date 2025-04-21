@@ -1,6 +1,6 @@
-import { loadJSON, loadImage } from "../loaders.ts";
-import SpriteSheet from "../SpriteSheet.ts";
-import { createAnim } from "../anim.ts";
+import { loadJSON, loadImage } from '../loaders.ts';
+import SpriteSheet from '../SpriteSheet.ts';
+import { createAnim } from '../anim.ts';
 
 interface TileSpec {
   name: string;
@@ -29,19 +29,13 @@ interface SheetSpec {
 
 export function loadSpriteSheet(name: string): Promise<SpriteSheet> {
   return loadJSON(`/sprites/${name}.json`)
-    .then((sheetSpec: SheetSpec) =>
-      Promise.all([sheetSpec, loadImage(sheetSpec.imageURL)])
-    )
+    .then((sheetSpec: SheetSpec) => Promise.all([sheetSpec, loadImage(sheetSpec.imageURL)]))
     .then(([sheetSpec, image]) => {
       const sprites = new SpriteSheet(image, sheetSpec.tileW, sheetSpec.tileH);
 
       if (sheetSpec.tiles) {
         sheetSpec.tiles.forEach((tileSpec: TileSpec) => {
-          sprites.defineTile(
-            tileSpec.name,
-            tileSpec.index[0],
-            tileSpec.index[1]
-          );
+          sprites.defineTile(tileSpec.name, tileSpec.index[0], tileSpec.index[1]);
         });
       }
 

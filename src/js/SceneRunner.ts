@@ -1,4 +1,4 @@
-import Scene from "./Scene";
+import Scene from './Scene';
 
 interface GameContext {
   videoContext: CanvasRenderingContext2D;

@@ -1,10 +1,7 @@
-import AudioBoard from "../AudioBoard.ts";
-import { loadJSON } from "../loaders.ts";
+import AudioBoard from '../AudioBoard.ts';
+import { loadJSON } from '../loaders.ts';
 
-export function loadAudioBoard(
-  name: string,
-  audioContext: AudioContext
-): Promise<AudioBoard> {
+export function loadAudioBoard(name: string, audioContext: AudioContext): Promise<AudioBoard> {
   const loadAudio = createAudioLoader(audioContext);
   return loadJSON(`/sounds/${name}.json`).then(
     (audioSheet: { fx: Record<string, { url: string }> }) => {

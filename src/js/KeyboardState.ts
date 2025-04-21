@@ -30,7 +30,7 @@ export default class KeyboardState {
 
     event.preventDefault();
 
-    const keyState = event.type === "keydown" ? PRESSED : RELEASED;
+    const keyState = event.type === 'keydown' ? PRESSED : RELEASED;
 
     if (this.keyStates.get(code) === keyState) {
       return;
@@ -42,7 +42,7 @@ export default class KeyboardState {
   }
 
   listenTo(window: Window): void {
-    ["keydown", "keyup"].forEach((eventName) => {
+    ['keydown', 'keyup'].forEach((eventName) => {
       window.addEventListener(eventName, (event) => {
         this.handleEvent(event as KeyboardEvent);
       });

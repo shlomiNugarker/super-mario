@@ -1,8 +1,8 @@
-import { Vec2 } from "./math.ts";
-import AudioBoard from "./AudioBoard.ts";
-import BoundingBox from "./BoundingBox.ts";
-import EventBuffer from "./EventBuffer.ts";
-import Trait, { Entity as TraitEntity } from "./Trait.ts";
+import { Vec2 } from './math.ts';
+import AudioBoard from './AudioBoard.ts';
+import BoundingBox from './BoundingBox.ts';
+import EventBuffer from './EventBuffer.ts';
+import Trait, { Entity as TraitEntity } from './Trait.ts';
 
 export interface EntityLike {
   bounds: BoundingBox;
@@ -31,10 +31,10 @@ export const Align = {
 };
 
 export const Sides = {
-  TOP: Symbol("top"),
-  BOTTOM: Symbol("bottom"),
-  LEFT: Symbol("left"),
-  RIGHT: Symbol("right"),
+  TOP: Symbol('top'),
+  BOTTOM: Symbol('bottom'),
+  LEFT: Symbol('left'),
+  RIGHT: Symbol('right'),
 };
 
 export default class Entity implements TraitEntity, EntityLike {

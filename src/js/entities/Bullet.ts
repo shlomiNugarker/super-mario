@@ -1,13 +1,13 @@
-import Entity from "../Entity.ts";
-import Trait from "../Trait.ts";
-import Killable from "../traits/Killable.ts";
-import Gravity from "../traits/Gravity.ts";
-import Stomper from "../traits/Stomper.ts";
-import Velocity from "../traits/Velocity.ts";
-import { loadSpriteSheet } from "../loaders/sprite.ts";
+import Entity from '../Entity.ts';
+import Trait from '../Trait.ts';
+import Killable from '../traits/Killable.ts';
+import Gravity from '../traits/Gravity.ts';
+import Stomper from '../traits/Stomper.ts';
+import Velocity from '../traits/Velocity.ts';
+import { loadSpriteSheet } from '../loaders/sprite.ts';
 
 export function loadBullet() {
-  return loadSpriteSheet("bullet").then(createBulletFactory);
+  return loadSpriteSheet('bullet').then(createBulletFactory);
 }
 
 class Behavior extends Trait {
@@ -24,7 +24,7 @@ class Behavior extends Trait {
       return;
     }
 
-    console.log("Collision in Bullet", them.vel.y);
+    console.log('Collision in Bullet', them.vel.y);
     if (them.traits.has(Stomper)) {
       if (them.vel.y > us.vel.y) {
         (us.traits.get(Killable) as Killable).kill();
@@ -45,7 +45,7 @@ class Behavior extends Trait {
 
 function createBulletFactory(sprite: any) {
   function drawBullet(this: Entity, context: CanvasRenderingContext2D): void {
-    sprite.draw("bullet", context, 0, 0, this.vel.x > 0);
+    sprite.draw('bullet', context, 0, 0, this.vel.x > 0);
   }
 
   return function createBullet(): Entity {

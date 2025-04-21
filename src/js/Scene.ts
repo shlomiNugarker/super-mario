@@ -1,6 +1,6 @@
-import Compositor from "./Compositor";
-import EventEmitter from "./EventEmitter";
-import { Camera } from "./debug";
+import Compositor from './Compositor';
+import EventEmitter from './EventEmitter';
+import { Camera } from './debug';
 
 interface GameContext {
   videoContext: CanvasRenderingContext2D;
@@ -8,7 +8,7 @@ interface GameContext {
 }
 
 export default class Scene {
-  static readonly EVENT_COMPLETE: string = "scene complete";
+  static readonly EVENT_COMPLETE: string = 'scene complete';
 
   protected events: EventEmitter;
   protected comp: Compositor;
@@ -25,7 +25,7 @@ export default class Scene {
   update(gameContext: GameContext): void {}
 
   pause(): void {
-    console.log("Pause", this);
+    console.log('Pause', this);
   }
 
   // Method to register a completion handler

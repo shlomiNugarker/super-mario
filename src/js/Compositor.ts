@@ -1,4 +1,4 @@
-import { Camera } from "./debug";
+import { Camera } from './debug';
 
 type Layer = (context: CanvasRenderingContext2D, camera: Camera) => void;
 

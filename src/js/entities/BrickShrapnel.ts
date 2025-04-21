@@ -1,16 +1,16 @@
-import Entity from "../Entity.ts";
-import LifeLimit from "../traits/LifeLimit.ts";
-import Gravity from "../traits/Gravity.ts";
-import Velocity from "../traits/Velocity.ts";
-import { loadAudioBoard } from "../loaders/audio.ts";
-import { loadSpriteSheet } from "../loaders/sprite.ts";
-import SpriteSheet from "../SpriteSheet.ts";
-import AudioBoard from "../AudioBoard.ts";
+import Entity from '../Entity.ts';
+import LifeLimit from '../traits/LifeLimit.ts';
+import Gravity from '../traits/Gravity.ts';
+import Velocity from '../traits/Velocity.ts';
+import { loadAudioBoard } from '../loaders/audio.ts';
+import { loadSpriteSheet } from '../loaders/sprite.ts';
+import SpriteSheet from '../SpriteSheet.ts';
+import AudioBoard from '../AudioBoard.ts';
 
 export function loadBrickShrapnel(audioContext: AudioContext) {
   return Promise.all([
-    loadSpriteSheet("brick-shrapnel"),
-    loadAudioBoard("brick-shrapnel", audioContext),
+    loadSpriteSheet('brick-shrapnel'),
+    loadAudioBoard('brick-shrapnel', audioContext),
   ]).then(([sprite, audio]) => {
     return createFactory(sprite, audio);
   });
@@ -18,7 +18,7 @@ export function loadBrickShrapnel(audioContext: AudioContext) {
 
 function createFactory(sprite: SpriteSheet, audio: AudioBoard) {
   function draw(this: Entity, context: CanvasRenderingContext2D) {
-    sprite.drawAnim("spinning-brick", context, 0, 0, this.lifetime);
+    sprite.drawAnim('spinning-brick', context, 0, 0, this.lifetime);
   }
 
   return function createBrickShrapnel() {

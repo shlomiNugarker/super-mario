@@ -11,7 +11,7 @@ export interface Entity {
 }
 
 export default class Trait {
-  static EVENT_TASK = Symbol("task");
+  static EVENT_TASK = Symbol('task');
   protected listeners: Listener[];
 
   constructor() {

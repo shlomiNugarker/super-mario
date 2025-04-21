@@ -1,11 +1,9 @@
-import Trait from "../Trait.ts";
-import { Entity } from "../Trait.ts";
+import Trait from '../Trait.ts';
+import { Entity } from '../Trait.ts';
 
 export default class Trigger extends Trait {
   touches: Set<Entity>;
-  conditions: Array<
-    (entity: Entity, touches: Set<Entity>, gameContext: any, level: any) => void
-  >;
+  conditions: Array<(entity: Entity, touches: Set<Entity>, gameContext: any, level: any) => void>;
 
   constructor() {
     super();

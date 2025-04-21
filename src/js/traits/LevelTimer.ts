@@ -1,11 +1,11 @@
-import Trait from "../Trait.ts";
-import { Entity } from "../Trait.ts";
+import Trait from '../Trait.ts';
+import { Entity } from '../Trait.ts';
 
-const MARK = Symbol("level timer earmark");
+const MARK = Symbol('level timer earmark');
 
 export default class LevelTimer extends Trait {
-  static EVENT_TIMER_HURRY = Symbol("timer hurry");
-  static EVENT_TIMER_OK = Symbol("timer ok");
+  static EVENT_TIMER_HURRY = Symbol('timer hurry');
+  static EVENT_TIMER_OK = Symbol('timer ok');
 
   totalTime: number;
   currentTime: number;
@@ -24,11 +24,7 @@ export default class LevelTimer extends Trait {
     this.currentTime = this.totalTime;
   }
 
-  update(
-    entity: Entity,
-    { deltaTime }: { deltaTime: number },
-    level: any
-  ): void {
+  update(entity: Entity, { deltaTime }: { deltaTime: number }, level: any): void {
     this.currentTime -= deltaTime * 2.5;
 
     if (!level[MARK]) {

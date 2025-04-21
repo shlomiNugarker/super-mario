@@ -17,19 +17,13 @@ export default class SpriteSheet {
     this.animations.set(name, animation);
   }
 
-  define(
-    name: string,
-    x: number,
-    y: number,
-    width: number,
-    height: number
-  ): void {
+  define(name: string, x: number, y: number, width: number, height: number): void {
     const buffers = [false, true].map((flip) => {
-      const buffer = document.createElement("canvas");
+      const buffer = document.createElement('canvas');
       buffer.width = width;
       buffer.height = height;
 
-      const context = buffer.getContext("2d");
+      const context = buffer.getContext('2d');
 
       if (context && flip) {
         context.scale(-1, 1);
@@ -76,12 +70,7 @@ export default class SpriteSheet {
     }
   }
 
-  drawTile(
-    name: string,
-    context: CanvasRenderingContext2D,
-    x: number,
-    y: number
-  ): void {
+  drawTile(name: string, context: CanvasRenderingContext2D, x: number, y: number): void {
     this.draw(name, context, x * this.width, y * this.height);
   }
 }

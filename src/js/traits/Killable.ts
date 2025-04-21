@@ -1,5 +1,5 @@
-import Trait from "../Trait.ts";
-import Entity from "../Entity.ts";
+import Trait from '../Trait.ts';
+import Entity from '../Entity.ts';
 
 export default class Killable extends Trait {
   dead: boolean;
@@ -22,11 +22,7 @@ export default class Killable extends Trait {
     this.deadTime = 0;
   }
 
-  update(
-    entity: Entity,
-    { deltaTime }: { deltaTime: number },
-    level: any
-  ): void {
+  update(entity: Entity, { deltaTime }: { deltaTime: number }, level: any): void {
     if (this.dead) {
       this.deadTime += deltaTime;
       if (this.deadTime > this.removeAfter) {

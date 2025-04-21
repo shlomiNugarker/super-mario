@@ -1,4 +1,4 @@
-import Scene from "./Scene.ts";
+import Scene from './Scene.ts';
 
 export default class TimedScene extends Scene {
   countDown: number;
