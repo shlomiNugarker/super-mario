@@ -38,7 +38,7 @@ export default class Trait {
     // Method implementation to be provided in subclasses
   }
 
-  obstruct(entity: Entity, side: Symbol, match: any) {
+  obstruct(entity: Entity, side: symbol, match: any) {
     // Method implementation to be provided in subclasses
   }
 

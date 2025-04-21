@@ -76,7 +76,7 @@ export default class Entity implements TraitEntity, EntityLike {
     });
   }
 
-  obstruct(side: Symbol, match: any): void {
+  obstruct(side: symbol, match: any): void {
     this.traits.forEach((trait) => {
       trait.obstruct(this, side, match);
     });
