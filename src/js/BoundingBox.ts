@@ -1,4 +1,4 @@
-import { Vec2 } from "./math.ts";
+import { Vec2 } from './math.ts';
 
 export default class BoundingBox {
   pos: Vec2;
