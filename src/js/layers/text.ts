@@ -1,6 +1,6 @@
-export function createTextLayer(font, text) {
+export function createTextLayer(font: any, text: string) {
   const size = font.size;
-  return function drawText(context) {
+  return function drawText(context: CanvasRenderingContext2D) {
     const textW = text.length;
     const screenW = Math.floor(context.canvas.width / size);
     const screenH = Math.floor(context.canvas.height / size);

@@ -1,10 +1,16 @@
-export function createSpriteLayer(entities, width = 64, height = 64) {
+import Camera from '../Camera';
+
+export function createSpriteLayer(entities: Set<any> | any[], width = 64, height = 64) {
   const spriteBuffer = document.createElement('canvas');
   spriteBuffer.width = width;
   spriteBuffer.height = height;
   const spriteBufferContext = spriteBuffer.getContext('2d');
 
-  return function drawSpriteLayer(context, camera) {
+  if (!spriteBufferContext) {
+    throw new Error('Failed to get 2D context for sprite buffer');
+  }
+
+  return function drawSpriteLayer(context: CanvasRenderingContext2D, camera: Camera) {
     entities.forEach((entity) => {
       if (!entity.draw) {
         return;

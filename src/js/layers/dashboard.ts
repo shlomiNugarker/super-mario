@@ -1,14 +1,15 @@
 import Player from '../traits/Player.ts';
 import LevelTimer from '../traits/LevelTimer.ts';
-import { findPlayers } from '../player.js';
+import { findPlayers } from '../player.ts';
+import Entity from '../Entity.ts';
 
-export function createDashboardLayer(font, entity) {
+export function createDashboardLayer(font: any, entity: Entity) {
   const LINE1 = font.size * 2;
   const LINE2 = font.size * 3;
 
-  return function drawDashboard(context) {
-    const playerTrait = entity.traits.get(Player);
-    const timerTrait = entity.traits.get(LevelTimer);
+  return function drawDashboard(context: CanvasRenderingContext2D) {
+    const playerTrait = entity.traits.get(Player) as Player;
+    const timerTrait = entity.traits.get(LevelTimer) as LevelTimer;
 
     font.print(playerTrait.name, context, 24, LINE1);
     font.print(playerTrait.score.toString().padStart(6, '0'), context, 24, LINE2);
