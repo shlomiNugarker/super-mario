@@ -1,30 +1,29 @@
-import Entity from "../Entity.js";
-import Go from "../traits/Go.js";
-import Jump from "../traits/Jump.js";
-import Killable from "../traits/Killable.ts";
-import Physics from "../traits/Physics.js";
-import PipeTraveller from "../traits/PipeTraveller.js";
-import PoleTraveller from "../traits/PoleTraveller.js";
-import Solid from "../traits/Solid.js";
-import Stomper from "../traits/Stomper.ts";
-import { loadAudioBoard } from "../loaders/audio.ts";
-import { loadSpriteSheet } from "../loaders/sprite.ts";
+import Entity from '../Entity.js';
+import Go from '../traits/Go.js';
+import Jump from '../traits/Jump.js';
+import Killable from '../traits/Killable.ts';
+import Physics from '../traits/Physics.js';
+import PipeTraveller from '../traits/PipeTraveller.js';
+import PoleTraveller from '../traits/PoleTraveller.js';
+import Solid from '../traits/Solid.js';
+import Stomper from '../traits/Stomper.ts';
+import { loadAudioBoard } from '../loaders/audio.ts';
+import { loadSpriteSheet } from '../loaders/sprite.ts';
 
 const SLOW_DRAG = 1 / 1000;
 const FAST_DRAG = 1 / 5000;
 
 export function loadMario(audioContext) {
-  return Promise.all([
-    loadSpriteSheet("mario"),
-    loadAudioBoard("mario", audioContext),
-  ]).then(([sprite, audio]) => {
-    return createMarioFactory(sprite, audio);
-  });
+  return Promise.all([loadSpriteSheet('mario'), loadAudioBoard('mario', audioContext)]).then(
+    ([sprite, audio]) => {
+      return createMarioFactory(sprite, audio);
+    }
+  );
 }
 
 function createMarioFactory(sprite, audio) {
-  const runAnim = sprite.animations.get("run");
-  const climbAnim = sprite.animations.get("climb");
+  const runAnim = sprite.animations.get('run');
+  const climbAnim = sprite.animations.get('climb');
 
   function getHeading(mario) {
     const poleTraveller = mario.traits.get(PoleTraveller);
@@ -40,7 +39,7 @@ function createMarioFactory(sprite, audio) {
       return runAnim(pipeTraveller.distance.x * 2);
     }
     if (pipeTraveller.movement.y != 0) {
-      return "idle";
+      return 'idle';
     }
 
     const poleTraveller = mario.traits.get(PoleTraveller);
@@ -49,19 +48,19 @@ function createMarioFactory(sprite, audio) {
     }
 
     if (mario.traits.get(Jump).falling) {
-      return "jump";
+      return 'jump';
     }
 
     const go = mario.traits.get(Go);
     if (go.distance > 0) {
       if ((mario.vel.x > 0 && go.dir < 0) || (mario.vel.x < 0 && go.dir > 0)) {
-        return "break";
+        return 'break';
       }
 
       return runAnim(mario.traits.get(Go).distance);
     }
 
-    return "idle";
+    return 'idle';
   }
 
   function setTurboState(turboOn) {

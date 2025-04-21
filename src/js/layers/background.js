@@ -1,13 +1,13 @@
-import TileResolver from "../TileResolver.ts";
+import TileResolver from '../TileResolver.ts';
 
 export function createBackgroundLayer(level, tiles, sprites) {
   const resolver = new TileResolver(tiles);
 
-  const buffer = document.createElement("canvas");
+  const buffer = document.createElement('canvas');
   buffer.width = 256 + 16;
   buffer.height = 240;
 
-  const context = buffer.getContext("2d");
+  const context = buffer.getContext('2d');
 
   function redraw(startIndex, endIndex) {
     context.clearRect(0, 0, buffer.width, buffer.height);
@@ -17,13 +17,7 @@ export function createBackgroundLayer(level, tiles, sprites) {
       if (col) {
         col.forEach((tile, y) => {
           if (sprites.animations.has(tile.style)) {
-            sprites.drawAnim(
-              tile.style,
-              context,
-              x - startIndex,
-              y,
-              level.totalTime
-            );
+            sprites.drawAnim(tile.style, context, x - startIndex, y, level.totalTime);
           } else {
             sprites.drawTile(tile.style, context, x - startIndex, y);
           }
@@ -38,10 +32,6 @@ export function createBackgroundLayer(level, tiles, sprites) {
     const drawTo = drawFrom + drawWidth;
     redraw(drawFrom, drawTo);
 
-    context.drawImage(
-      buffer,
-      Math.floor(-camera.pos.x % 16),
-      Math.floor(-camera.pos.y)
-    );
+    context.drawImage(buffer, Math.floor(-camera.pos.x % 16), Math.floor(-camera.pos.y));
   };
 }

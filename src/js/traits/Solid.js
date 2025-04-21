@@ -1,5 +1,5 @@
-import { Sides } from "../Entity.js";
-import Trait from "../Trait.ts";
+import { Sides } from '../Entity.js';
+import Trait from '../Trait.ts';
 
 export default class Solid extends Trait {
   constructor() {

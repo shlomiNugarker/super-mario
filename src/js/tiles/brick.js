@@ -1,6 +1,6 @@
-import { Vec2 } from "../math.js";
-import { Sides } from "../Entity.js";
-import Player from "../traits/Player.ts";
+import { Vec2 } from '../math.js';
+import { Sides } from '../Entity.js';
+import Player from '../traits/Player.ts';
 
 function centerEntity(entity, pos) {
   entity.pos.x = pos.x - entity.size.x / 2;
@@ -8,10 +8,7 @@ function centerEntity(entity, pos) {
 }
 
 function getMatchCenter(match) {
-  return new Vec2(
-    match.x1 + (match.x2 - match.x1) / 2,
-    match.y1 + (match.y2 - match.y1) / 2
-  );
+  return new Vec2(match.x1 + (match.x2 - match.x1) / 2, match.y1 + (match.y2 - match.y1) / 2);
 }
 
 function addShrapnel(level, gameContext, match) {
@@ -27,7 +24,7 @@ function addShrapnel(level, gameContext, match) {
 
   const spreadH = 60;
   const spreadV = 400;
-  bricks[0].sounds.add("break");
+  bricks[0].sounds.add('break');
   bricks[0].vel.set(-spreadH, -spreadV * 1.2);
   bricks[1].vel.set(-spreadH, -spreadV);
   bricks[2].vel.set(spreadH, -spreadV * 1.2);

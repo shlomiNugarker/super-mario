@@ -1,10 +1,10 @@
-import Entity from "../Entity.js";
-import Trait from "../Trait.ts";
-import { loadSpriteSheet } from "../loaders/sprite.ts";
-import { findPlayers } from "../player.js";
+import Entity from '../Entity.js';
+import Trait from '../Trait.ts';
+import { loadSpriteSheet } from '../loaders/sprite.ts';
+import { findPlayers } from '../player.js';
 
 export function loadPiranhaPlant() {
-  return loadSpriteSheet("piranha-plant").then(createPiranhaPlantFactory);
+  return loadSpriteSheet('piranha-plant').then(createPiranhaPlantFactory);
 }
 
 class Behavior extends Trait {
@@ -31,9 +31,7 @@ class Behavior extends Trait {
 
     if (this.idleCounter !== null) {
       for (const player of findPlayers(level.entities)) {
-        const distance = player.bounds
-          .getCenter()
-          .distance(entity.bounds.getCenter());
+        const distance = player.bounds.getCenter().distance(entity.bounds.getCenter());
         if (distance < this.graceDistance) {
           this.idleCounter = 0;
           return;
@@ -76,7 +74,7 @@ class Behavior extends Trait {
 }
 
 function createPiranhaPlantFactory(sprite) {
-  const chewAnim = sprite.animations.get("chew");
+  const chewAnim = sprite.animations.get('chew');
 
   function routeAnim(entity) {
     return chewAnim(entity.lifetime);

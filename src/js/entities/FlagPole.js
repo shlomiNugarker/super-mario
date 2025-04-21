@@ -1,13 +1,11 @@
-import Entity from "../Entity.js";
-import Pole from "../traits/Pole.js";
-import { loadAudioBoard } from "../loaders/audio.ts";
+import Entity from '../Entity.js';
+import Pole from '../traits/Pole.js';
+import { loadAudioBoard } from '../loaders/audio.ts';
 
 export function loadFlagPole(audioContext) {
-  return Promise.all([loadAudioBoard("flag-pole", audioContext)]).then(
-    ([audio]) => {
-      return createFactory(audio);
-    }
-  );
+  return Promise.all([loadAudioBoard('flag-pole', audioContext)]).then(([audio]) => {
+    return createFactory(audio);
+  });
 }
 
 function createFactory(audio) {

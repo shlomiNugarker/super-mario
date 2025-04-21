@@ -1,41 +1,33 @@
-import Level from "./Level.js";
-import Timer from "./Timer.ts";
-import Pipe from "./traits/Pipe.js";
-import { createLevelLoader } from "./loaders/level.js";
-import { loadFont } from "./loaders/font.js";
-import { loadEntities } from "./entities.js";
-import {
-  makePlayer,
-  bootstrapPlayer,
-  resetPlayer,
-  findPlayers,
-} from "./player.js";
-import { setupKeyboard } from "./input.js";
-import { createColorLayer } from "./layers/color.js";
-import { createTextLayer } from "./layers/text.js";
-import { createCollisionLayer } from "./layers/collision.js";
-import { createDashboardLayer } from "./layers/dashboard.js";
-import { createPlayerProgressLayer } from "./layers/player-progress.js";
-import SceneRunner from "./SceneRunner.ts";
-import Scene from "./Scene.ts";
-import TimedScene from "./TimedScene.ts";
-import { connectEntity } from "./traits/Pipe.js";
+import Level from './Level.js';
+import Timer from './Timer.ts';
+import Pipe from './traits/Pipe.js';
+import { createLevelLoader } from './loaders/level.js';
+import { loadFont } from './loaders/font.js';
+import { loadEntities } from './entities.js';
+import { makePlayer, bootstrapPlayer, resetPlayer, findPlayers } from './player.js';
+import { setupKeyboard } from './input.js';
+import { createColorLayer } from './layers/color.js';
+import { createTextLayer } from './layers/text.js';
+import { createCollisionLayer } from './layers/collision.js';
+import { createDashboardLayer } from './layers/dashboard.js';
+import { createPlayerProgressLayer } from './layers/player-progress.js';
+import SceneRunner from './SceneRunner.ts';
+import Scene from './Scene.ts';
+import TimedScene from './TimedScene.ts';
+import { connectEntity } from './traits/Pipe.js';
 
 async function main(canvas) {
-  const videoContext = canvas.getContext("2d");
+  const videoContext = canvas.getContext('2d');
   const audioContext = new AudioContext();
 
-  const [entityFactory, font] = await Promise.all([
-    loadEntities(audioContext),
-    loadFont(),
-  ]);
+  const [entityFactory, font] = await Promise.all([loadEntities(audioContext), loadFont()]);
 
   const loadLevel = await createLevelLoader(entityFactory);
 
   const sceneRunner = new SceneRunner();
 
   const mario = entityFactory.mario();
-  makePlayer(mario, "MARIO");
+  makePlayer(mario, 'MARIO');
 
   window.mario = mario;
 
@@ -44,7 +36,7 @@ async function main(canvas) {
 
   function createLoadingScreen(name) {
     const scene = new Scene();
-    scene.comp.layers.push(createColorLayer("#000"));
+    scene.comp.layers.push(createColorLayer('#000'));
     scene.comp.layers.push(createTextLayer(font, `Loading ${name}...`));
     return scene;
   }
@@ -58,7 +50,7 @@ async function main(canvas) {
     bootstrapPlayer(mario, level);
 
     level.events.listen(Level.EVENT_TRIGGER, (spec, trigger, touches) => {
-      if (spec.type === "goto") {
+      if (spec.type === 'goto') {
         for (const _ of findPlayers(touches)) {
           startWorld(spec.name);
           return;
@@ -103,7 +95,7 @@ async function main(canvas) {
 
     const waitScreen = new TimedScene();
     waitScreen.countDown = 0;
-    waitScreen.comp.layers.push(createColorLayer("#000"));
+    waitScreen.comp.layers.push(createColorLayer('#000'));
     waitScreen.comp.layers.push(dashboardLayer);
     waitScreen.comp.layers.push(playerProgressLayer);
 
@@ -129,14 +121,14 @@ async function main(canvas) {
 
   timer.start();
 
-  startWorld("1-1");
+  startWorld('1-1');
 }
 
-const canvas = document.getElementById("screen");
+const canvas = document.getElementById('screen');
 
 const start = () => {
-  window.removeEventListener("click", start);
+  window.removeEventListener('click', start);
   main(canvas);
 };
 
-window.addEventListener("click", start);
+window.addEventListener('click', start);

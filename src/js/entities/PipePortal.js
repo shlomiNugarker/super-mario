@@ -1,14 +1,12 @@
-import { Direction } from "../math.js";
-import Entity from "../Entity.js";
-import Pipe from "../traits/Pipe.js";
-import { loadAudioBoard } from "../loaders/audio.ts";
+import { Direction } from '../math.js';
+import Entity from '../Entity.js';
+import Pipe from '../traits/Pipe.js';
+import { loadAudioBoard } from '../loaders/audio.ts';
 
 export function loadPipePortal(audioContext) {
-  return Promise.all([loadAudioBoard("pipe-portal", audioContext)]).then(
-    ([audio]) => {
-      return createFactory(audio);
-    }
-  );
+  return Promise.all([loadAudioBoard('pipe-portal', audioContext)]).then(([audio]) => {
+    return createFactory(audio);
+  });
 }
 
 function createFactory(audio) {

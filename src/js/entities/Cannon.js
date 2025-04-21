@@ -1,12 +1,12 @@
-import Entity from "../Entity.ts";
-import Emitter from "../traits/Emitter.ts";
-import { findPlayers } from "../player.js";
-import { loadAudioBoard } from "../loaders/audio.ts";
+import Entity from '../Entity.ts';
+import Emitter from '../traits/Emitter.ts';
+import { findPlayers } from '../player.js';
+import { loadAudioBoard } from '../loaders/audio.ts';
 
 const HOLD_FIRE_THRESHOLD = 30;
 
 export function loadCannon(audioContext) {
-  return loadAudioBoard("cannon", audioContext).then((audio) => {
+  return loadAudioBoard('cannon', audioContext).then((audio) => {
     return createCannonFactory(audio);
   });
 }
@@ -32,7 +32,7 @@ function createCannonFactory(audio) {
     bullet.pos.copy(cannon.pos);
     bullet.vel.set(80 * dir, 0);
 
-    cannon.sounds.add("shoot");
+    cannon.sounds.add('shoot');
     level.entities.add(bullet);
   }
 

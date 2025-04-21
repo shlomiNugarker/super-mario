@@ -1,7 +1,7 @@
-import { loadImage } from "../loaders.ts";
-import SpriteSheet from "../SpriteSheet.ts";
+import { loadImage } from '../loaders.ts';
+import SpriteSheet from '../SpriteSheet.ts';
 
-const CHARS = " 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ©!-×.";
+const CHARS = ' 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ©!-×.';
 
 class Font {
   constructor(sprites, size) {
@@ -17,7 +17,7 @@ class Font {
 }
 
 export function loadFont() {
-  return loadImage("./img/font.png").then((image) => {
+  return loadImage('./img/font.png').then((image) => {
     const fontSprite = new SpriteSheet(image);
 
     const size = 8;

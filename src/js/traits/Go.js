@@ -1,4 +1,4 @@
-import Trait from "../Trait.ts";
+import Trait from '../Trait.ts';
 
 export default class Go extends Trait {
   constructor() {

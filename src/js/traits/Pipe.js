@@ -1,7 +1,7 @@
-import { Vec2, Direction } from "../math.ts";
-import { Sides, Align } from "../Entity.ts";
-import Trait from "../Trait.ts";
-import PipeTraveller from "./PipeTraveller.js";
+import { Vec2, Direction } from '../math.ts';
+import { Sides, Align } from '../Entity.ts';
+import Trait from '../Trait.ts';
+import PipeTraveller from './PipeTraveller.js';
 
 function createTravellerState() {
   return {
@@ -27,7 +27,7 @@ export function connectEntity(pipeEntity, travellerEntity) {
 }
 
 export default class Pipe extends Trait {
-  static EVENT_PIPE_COMPLETE = Symbol("pipe complete");
+  static EVENT_PIPE_COMPLETE = Symbol('pipe complete');
 
   constructor() {
     super();
@@ -60,19 +60,13 @@ export default class Pipe extends Trait {
     if (traveller.traits.get(PipeTraveller).direction.equals(this.direction)) {
       const tBounds = traveller.bounds;
       const pBounds = pipe.bounds;
-      if (
-        this.direction.x &&
-        (tBounds.top < pBounds.top || tBounds.bottom > pBounds.bottom)
-      ) {
+      if (this.direction.x && (tBounds.top < pBounds.top || tBounds.bottom > pBounds.bottom)) {
         return;
       }
-      if (
-        this.direction.y &&
-        (tBounds.left < pBounds.left || tBounds.right > pBounds.right)
-      ) {
+      if (this.direction.y && (tBounds.left < pBounds.left || tBounds.right > pBounds.right)) {
         return;
       }
-      pipe.sounds.add("pipe");
+      pipe.sounds.add('pipe');
       this.addTraveller(pipe, traveller);
     }
   }
@@ -82,10 +76,8 @@ export default class Pipe extends Trait {
     for (const [traveller, state] of this.travellers.entries()) {
       state.time += deltaTime;
       const progress = state.time / this.duration;
-      traveller.pos.x =
-        state.start.x + (state.end.x - state.start.x) * progress;
-      traveller.pos.y =
-        state.start.y + (state.end.y - state.start.y) * progress;
+      traveller.pos.x = state.start.x + (state.end.x - state.start.x) * progress;
+      traveller.pos.y = state.start.y + (state.end.y - state.start.y) * progress;
       traveller.vel.set(0, 0);
 
       const pipeTraveller = traveller.traits.get(PipeTraveller);

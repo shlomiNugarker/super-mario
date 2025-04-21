@@ -1,7 +1,7 @@
-import { Vec2, Direction } from "../math.js";
-import { Sides, Align } from "../Entity.js";
-import Trait from "../Trait.ts";
-import PoleTraveller from "./PoleTraveller.js";
+import { Vec2, Direction } from '../math.js';
+import { Sides, Align } from '../Entity.js';
+import Trait from '../Trait.ts';
+import PoleTraveller from './PoleTraveller.js';
 
 function createTravellerState() {
   return {
@@ -19,7 +19,7 @@ export default class Pole extends Trait {
   }
 
   addTraveller(pole, traveller) {
-    pole.sounds.add("ride");
+    pole.sounds.add('ride');
 
     const poleTraveller = traveller.traits.get(PoleTraveller);
     poleTraveller.distance = 0;

@@ -1,4 +1,4 @@
-import Player from "../traits/Player.ts";
+import Player from '../traits/Player.ts';
 
 function handle({ entity, match, resolver }) {
   const player = entity.traits.get(Player);

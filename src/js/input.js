@@ -1,16 +1,16 @@
-import Keyboard from "./KeyboardState.ts";
-import InputRouter from "./InputRouter.ts";
-import Jump from "./traits/Jump.js";
-import PipeTraveller from "./traits/PipeTraveller.js";
-import Go from "./traits/Go.js";
+import Keyboard from './KeyboardState.ts';
+import InputRouter from './InputRouter.ts';
+import Jump from './traits/Jump.js';
+import PipeTraveller from './traits/PipeTraveller.js';
+import Go from './traits/Go.js';
 
 const KEYMAP = {
-  UP: "KeyW",
-  DOWN: "KeyS",
-  LEFT: "KeyA",
-  RIGHT: "KeyD",
-  A: "KeyP",
-  B: "KeyO",
+  UP: 'KeyW',
+  DOWN: 'KeyS',
+  LEFT: 'KeyA',
+  RIGHT: 'KeyD',
+  A: 'KeyP',
+  B: 'KeyO',
 };
 
 export function setupKeyboard(window) {

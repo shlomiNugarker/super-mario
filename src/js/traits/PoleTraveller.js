@@ -1,5 +1,5 @@
-import { Vec2 } from "../math.js";
-import Trait from "../Trait.ts";
+import { Vec2 } from '../math.js';
+import Trait from '../Trait.ts';
 
 export default class PoleTraveller extends Trait {
   constructor() {

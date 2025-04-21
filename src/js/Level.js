@@ -1,10 +1,10 @@
-import Camera from "./Camera.ts";
-import MusicController from "./MusicController.ts";
-import EntityCollider from "./EntityCollider.ts";
-import Scene from "./Scene.ts";
-import TileCollider from "./TileCollider.js";
-import { clamp } from "./math.ts";
-import { findPlayers } from "./player.js";
+import Camera from './Camera.ts';
+import MusicController from './MusicController.ts';
+import EntityCollider from './EntityCollider.ts';
+import Scene from './Scene.ts';
+import TileCollider from './TileCollider.js';
+import { clamp } from './math.ts';
+import { findPlayers } from './player.js';
 
 function focusPlayer(level) {
   for (const player of findPlayers(level.entities)) {
@@ -27,13 +27,13 @@ class EntityCollection extends Set {
 }
 
 export default class Level extends Scene {
-  static EVENT_TRIGGER = Symbol("trigger");
-  static EVENT_COMPLETE = Symbol("complete");
+  static EVENT_TRIGGER = Symbol('trigger');
+  static EVENT_COMPLETE = Symbol('complete');
 
   constructor() {
     super();
 
-    this.name = "";
+    this.name = '';
 
     this.checkpoints = [];
 

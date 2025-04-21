@@ -1,5 +1,5 @@
-import { Sides } from "../Entity.js";
-import Trait from "../Trait.ts";
+import { Sides } from '../Entity.js';
+import Trait from '../Trait.ts';
 
 export default class Jump extends Trait {
   constructor() {
@@ -38,7 +38,7 @@ export default class Jump extends Trait {
   update(entity, { deltaTime }, level) {
     if (this.requestTime > 0) {
       if (this.ready > 0) {
-        entity.sounds.add("jump");
+        entity.sounds.add('jump');
         this.engageTime = this.duration;
         this.requestTime = 0;
       }
@@ -47,10 +47,7 @@ export default class Jump extends Trait {
     }
 
     if (this.engageTime > 0) {
-      entity.vel.y = -(
-        this.velocity +
-        Math.abs(entity.vel.x) * this.speedBoost
-      );
+      entity.vel.y = -(this.velocity + Math.abs(entity.vel.x) * this.speedBoost);
       this.engageTime -= deltaTime;
     }
 

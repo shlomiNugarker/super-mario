@@ -1,7 +1,7 @@
-import TileResolver from "./TileResolver.ts";
-import { brick } from "./tiles/brick.js";
-import { coin } from "./tiles/coin.js";
-import { ground } from "./tiles/ground.js";
+import TileResolver from './TileResolver.ts';
+import { brick } from './tiles/brick.js';
+import { coin } from './tiles/coin.js';
+import { ground } from './tiles/ground.js';
 
 const handlers = {
   brick,
@@ -29,12 +29,7 @@ export default class TileCollider {
     }
 
     for (const resolver of this.resolvers) {
-      const matches = resolver.searchByRange(
-        x,
-        x,
-        entity.bounds.top,
-        entity.bounds.bottom
-      );
+      const matches = resolver.searchByRange(x, x, entity.bounds.top, entity.bounds.bottom);
 
       matches.forEach((match) => {
         this.handle(0, entity, match, resolver, gameContext, level);
@@ -53,12 +48,7 @@ export default class TileCollider {
     }
 
     for (const resolver of this.resolvers) {
-      const matches = resolver.searchByRange(
-        entity.bounds.left,
-        entity.bounds.right,
-        y,
-        y
-      );
+      const matches = resolver.searchByRange(entity.bounds.left, entity.bounds.right, y, y);
 
       matches.forEach((match) => {
         this.handle(1, entity, match, resolver, gameContext, level);

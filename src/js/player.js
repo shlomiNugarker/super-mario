@@ -1,9 +1,9 @@
-import Player from "./traits/Player.ts";
-import LevelTimer from "./traits/LevelTimer.ts";
+import Player from './traits/Player.ts';
+import LevelTimer from './traits/LevelTimer.ts';
 
 export function makePlayer(entity, name) {
   const player = new Player();
-  player.name = "MARIO";
+  player.name = 'MARIO';
   entity.addTrait(player);
 
   const timer = new LevelTimer();

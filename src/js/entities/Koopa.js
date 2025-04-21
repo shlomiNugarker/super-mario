@@ -1,23 +1,23 @@
-import Entity from "../Entity.js";
-import Trait from "../Trait.ts";
-import Killable from "../traits/Killable.ts";
-import PendulumMove from "../traits/PendulumMove.js";
-import Physics from "../traits/Physics.js";
-import Solid from "../traits/Solid.js";
-import Stomper from "../traits/Stomper.ts";
-import { loadSpriteSheet } from "../loaders/sprite.ts";
+import Entity from '../Entity.js';
+import Trait from '../Trait.ts';
+import Killable from '../traits/Killable.ts';
+import PendulumMove from '../traits/PendulumMove.js';
+import Physics from '../traits/Physics.js';
+import Solid from '../traits/Solid.js';
+import Stomper from '../traits/Stomper.ts';
+import { loadSpriteSheet } from '../loaders/sprite.ts';
 
 export function loadKoopaGreen() {
-  return loadSpriteSheet("koopa-green").then(createKoopaFactory);
+  return loadSpriteSheet('koopa-green').then(createKoopaFactory);
 }
 
 export function loadKoopaBlue() {
-  return loadSpriteSheet("koopa-blue").then(createKoopaFactory);
+  return loadSpriteSheet('koopa-blue').then(createKoopaFactory);
 }
 
-const STATE_WALKING = Symbol("walking");
-const STATE_HIDING = Symbol("hiding");
-const STATE_PANIC = Symbol("panic");
+const STATE_WALKING = Symbol('walking');
+const STATE_HIDING = Symbol('hiding');
+const STATE_PANIC = Symbol('panic');
 
 class Behavior extends Trait {
   constructor() {
@@ -106,19 +106,19 @@ class Behavior extends Trait {
 }
 
 function createKoopaFactory(sprite) {
-  const walkAnim = sprite.animations.get("walk");
-  const wakeAnim = sprite.animations.get("wake");
+  const walkAnim = sprite.animations.get('walk');
+  const wakeAnim = sprite.animations.get('wake');
 
   function routeAnim(koopa) {
     if (koopa.traits.get(Behavior).state === STATE_HIDING) {
       if (koopa.traits.get(Behavior).hideTime > 3) {
         return wakeAnim(koopa.traits.get(Behavior).hideTime);
       }
-      return "hiding";
+      return 'hiding';
     }
 
     if (koopa.traits.get(Behavior).state === STATE_PANIC) {
-      return "hiding";
+      return 'hiding';
     }
 
     return walkAnim(koopa.lifetime);
