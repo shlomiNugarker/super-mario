@@ -1,5 +1,5 @@
 import Entity from '../Entity.ts';
-import Pole from '../traits/Pole.js';
+import Pole from '../traits/Pole.ts';
 import { loadAudioBoard } from '../loaders/audio.ts';
 
 export function loadFlagPole(audioContext) {

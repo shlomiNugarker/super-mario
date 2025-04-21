@@ -2,26 +2,36 @@ import { Vec2, Direction } from '../math.ts';
 import { Sides, Align } from '../Entity.ts';
 import Trait from '../Trait.ts';
 import PoleTraveller from './PoleTraveller.ts';
+import Entity from '../Entity.ts';
 
-function createTravellerState() {
+interface TravellerState {
+  current: Vec2;
+  goal: Vec2;
+  done: boolean;
+}
+
+function createTravellerState(): TravellerState {
   return {
-    current: new Vec2(),
-    goal: new Vec2(),
+    current: new Vec2(0, 0),
+    goal: new Vec2(0, 0),
     done: false,
   };
 }
 
 export default class Pole extends Trait {
+  velocity: number;
+  travellers: Map<Entity, TravellerState>;
+
   constructor() {
     super();
     this.velocity = 100;
     this.travellers = new Map();
   }
 
-  addTraveller(pole, traveller) {
+  addTraveller(pole: Entity, traveller: Entity): void {
     pole.sounds.add('ride');
 
-    const poleTraveller = traveller.traits.get(PoleTraveller);
+    const poleTraveller = traveller.traits.get(PoleTraveller) as PoleTraveller;
     poleTraveller.distance = 0;
 
     const state = createTravellerState();
@@ -32,7 +42,7 @@ export default class Pole extends Trait {
     this.travellers.set(traveller, state);
   }
 
-  collides(pole, traveller) {
+  collides(pole: Entity, traveller: Entity): void {
     if (!traveller.traits.has(PoleTraveller)) {
       return;
     }
@@ -44,7 +54,7 @@ export default class Pole extends Trait {
     this.addTraveller(pole, traveller);
   }
 
-  update(pole, gameContext, level) {
+  update(pole: Entity, gameContext: { deltaTime: number }, level: any): void {
     const { deltaTime } = gameContext;
     const distance = this.velocity * deltaTime;
     for (const [traveller, state] of this.travellers.entries()) {
@@ -53,7 +63,7 @@ export default class Pole extends Trait {
         traveller.bounds.right = state.current.x;
         traveller.bounds.bottom = state.current.y;
 
-        const poleTraveller = traveller.traits.get(PoleTraveller);
+        const poleTraveller = traveller.traits.get(PoleTraveller) as PoleTraveller;
         poleTraveller.distance += distance;
 
         if (traveller.bounds.bottom > state.goal.y) {
