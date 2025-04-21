@@ -1,13 +1,15 @@
-import { Sides } from '../Entity.js';
+import { Sides } from '../Entity.ts';
 import Trait from '../Trait.ts';
 
 export default class Solid extends Trait {
+  obstructs: boolean;
+
   constructor() {
     super();
     this.obstructs = true;
   }
 
-  obstruct(entity, side, match) {
+  obstruct(entity: any, side: symbol, match: any): void {
     if (!this.obstructs) {
       return;
     }
