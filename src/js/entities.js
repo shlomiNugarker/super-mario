@@ -1,5 +1,5 @@
 import { loadMario } from './entities/Mario.js';
-import { loadGoombaBrown, loadGoombaBlue } from './entities/Goomba.js';
+import { loadGoombaBrown, loadGoombaBlue } from './entities/Goomba.ts';
 import { loadKoopaGreen, loadKoopaBlue } from './entities/Koopa.js';
 import { loadPiranhaPlant } from './entities/PiranhaPlant.js';
 import { loadBullet } from './entities/Bullet.ts';
