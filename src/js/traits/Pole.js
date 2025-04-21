@@ -1,7 +1,7 @@
-import { Vec2, Direction } from '../math.js';
-import { Sides, Align } from '../Entity.js';
+import { Vec2, Direction } from '../math.ts';
+import { Sides, Align } from '../Entity.ts';
 import Trait from '../Trait.ts';
-import PoleTraveller from './PoleTraveller.js';
+import PoleTraveller from './PoleTraveller.ts';
 
 function createTravellerState() {
   return {

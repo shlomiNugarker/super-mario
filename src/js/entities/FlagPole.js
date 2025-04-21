@@ -1,4 +1,4 @@
-import Entity from '../Entity.js';
+import Entity from '../Entity.ts';
 import Pole from '../traits/Pole.js';
 import { loadAudioBoard } from '../loaders/audio.ts';
 

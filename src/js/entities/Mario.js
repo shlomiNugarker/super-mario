@@ -4,7 +4,7 @@ import Jump from '../traits/Jump.js';
 import Killable from '../traits/Killable.ts';
 import Physics from '../traits/Physics.js';
 import PipeTraveller from '../traits/PipeTraveller.js';
-import PoleTraveller from '../traits/PoleTraveller.js';
+import PoleTraveller from '../traits/PoleTraveller.ts';
 import Solid from '../traits/Solid.js';
 import Stomper from '../traits/Stomper.ts';
 import { loadAudioBoard } from '../loaders/audio.ts';
