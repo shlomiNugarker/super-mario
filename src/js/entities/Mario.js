@@ -2,7 +2,7 @@ import Entity from '../Entity.js';
 import Go from '../traits/Go.js';
 import Jump from '../traits/Jump.js';
 import Killable from '../traits/Killable.ts';
-import Physics from '../traits/Physics.js';
+import Physics from '../traits/Physics.ts';
 import PipeTraveller from '../traits/PipeTraveller.js';
 import PoleTraveller from '../traits/PoleTraveller.ts';
 import Solid from '../traits/Solid.ts';

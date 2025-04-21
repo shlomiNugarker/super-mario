@@ -2,7 +2,7 @@ import Entity from '../Entity.js';
 import Trait from '../Trait.ts';
 import Killable from '../traits/Killable.ts';
 import PendulumMove from '../traits/PendulumMove.ts';
-import Physics from '../traits/Physics.js';
+import Physics from '../traits/Physics.ts';
 import Solid from '../traits/Solid.ts';
 import Stomper from '../traits/Stomper.ts';
 import { loadSpriteSheet } from '../loaders/sprite.ts';
