@@ -2,7 +2,7 @@ import Camera from './Camera.ts';
 import MusicController from './MusicController.ts';
 import EntityCollider from './EntityCollider.ts';
 import Scene from './Scene.ts';
-import TileCollider from './TileCollider.js';
+import TileCollider from './TileCollider.ts';
 import { clamp, Vec2 } from './math.ts';
 import { findPlayers } from './player.ts';
 import Compositor from './Compositor.ts';
