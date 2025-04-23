@@ -13,7 +13,7 @@ import SceneRunner from './SceneRunner.ts';
 import Scene from './Scene.ts';
 import TimedScene from './TimedScene.ts';
 import { LevelEvents } from '../types/level';
-import { CANVAS_WIDTH, CANVAS_HEIGHT, DEBUG_COLLISIONS } from './config.ts';
+import { CANVAS_WIDTH, CANVAS_HEIGHT, DEBUG_COLLISIONS, PLAYER_JUMP_VELOCITY } from './config.ts';
 import Pipe from './traits/Pipe.ts';
 import { connectEntity } from './traits/Pipe.js';
 import GameService from './services/GameService.ts';
@@ -22,6 +22,11 @@ import DebugService from './services/DebugService.ts';
 import SaveService from './services/SaveService.ts';
 import AssetService from './services/AssetService.ts';
 import LevelService from './services/LevelService.ts';
+import WeatherService, { WeatherType } from './services/WeatherService';
+import AchievementService from './services/AchievementService';
+import DifficultyService from './services/DifficultyService';
+import ScreenShakeService from './services/ScreenShakeService';
+import AchievementNotificationUI from './ui/AchievementNotification';
 
 // Define the window.mario property
 declare global {
@@ -39,6 +44,11 @@ export default class Game {
   private inputService: InputService;
   private debugService: DebugService;
   private saveService: SaveService;
+  private weatherService: WeatherService;
+  private achievementService: AchievementService;
+  private difficultyService: DifficultyService;
+  private screenShakeService: ScreenShakeService;
+  private achievementUI: AchievementNotificationUI;
   private sceneRunner: SceneRunner;
   private timer: Timer;
   private mario: any;
@@ -47,6 +57,7 @@ export default class Game {
   private pauseMenu: HTMLElement | null;
   private gameUI: HTMLElement | null;
   private debugPanel: HTMLElement | null;
+  private _weatherInterval: number | null = null;
 
   /**
    * Constructor
@@ -58,6 +69,11 @@ export default class Game {
     this.inputService = InputService.getInstance();
     this.debugService = DebugService.getInstance();
     this.saveService = SaveService.getInstance();
+    this.weatherService = WeatherService.getInstance();
+    this.achievementService = AchievementService.getInstance();
+    this.difficultyService = DifficultyService.getInstance();
+    this.screenShakeService = ScreenShakeService.getInstance();
+    this.achievementUI = new AchievementNotificationUI();
     this.sceneRunner = new SceneRunner();
     this.timer = new Timer(1 / 60);
     this.mario = null;
@@ -92,6 +108,10 @@ export default class Game {
     this.inputService.init(window);
     this.debugService.init();
 
+    // Initialize new services
+    this.weatherService.init(videoContext);
+    this.screenShakeService.init(this.canvas, videoContext);
+
     // Register pause handler with InputService
     this.inputService.setPauseHandler(() => {
       if (this._isPaused) {
@@ -103,6 +123,9 @@ export default class Game {
 
     // Set up debug panel
     this.setupDebugPanel();
+
+    // Check for pending achievement notifications
+    this.checkPendingAchievements();
 
     try {
       // Try to preload assets, but continue even if it fails
@@ -140,8 +163,18 @@ export default class Game {
       this.inputService.addReceiver(this.mario);
 
       this.timer.update = (deltaTime: number) => {
+        // Update screen shake
+        this.screenShakeService.update();
+
+        // Apply difficulty settings
+        this.applyDifficultySettings();
+
+        // Update game state
         this.gameService.update(deltaTime);
         this.sceneRunner.update(this.gameService.getGameContext());
+
+        // Update weather effects
+        this.weatherService.update(deltaTime);
 
         // Update debug information
         if (this.mario) {
@@ -164,6 +197,9 @@ export default class Game {
         this.updateDebugPanel();
       };
 
+      // Set up achievement listeners
+      this.setupAchievementListeners();
+
       await this.startWorld('1-1', loadLevel);
 
       // Remove loading indicator after initialization
@@ -175,6 +211,9 @@ export default class Game {
       this.clearAllLoadingIndicators();
 
       this.timer.start();
+
+      // Add random weather to demo the feature
+      this.addRandomWeather();
     } catch (error) {
       console.error('Error initializing game:', error);
 
@@ -204,6 +243,29 @@ export default class Game {
     this.debugPanel = document.createElement('div');
     this.debugPanel.id = 'debug-panel';
     document.body.appendChild(this.debugPanel);
+
+    // Create settings button
+    const settingsButton = document.createElement('button');
+    settingsButton.id = 'settings-button';
+    settingsButton.textContent = '⚙️'; // Gear emoji
+    settingsButton.style.position = 'absolute';
+    settingsButton.style.top = '10px';
+    settingsButton.style.right = '10px';
+    settingsButton.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+    settingsButton.style.color = 'white';
+    settingsButton.style.border = 'none';
+    settingsButton.style.borderRadius = '5px';
+    settingsButton.style.padding = '5px 10px';
+    settingsButton.style.fontSize = '20px';
+    settingsButton.style.cursor = 'pointer';
+    settingsButton.style.zIndex = '100';
+    settingsButton.title = 'Settings';
+
+    settingsButton.addEventListener('click', () => {
+      this.showSettingsMenu();
+    });
+
+    document.body.appendChild(settingsButton);
 
     // Note: Touch controls are now handled by InputService
     // No need to call createTouchControls() here
@@ -688,40 +750,70 @@ export default class Game {
   }
 
   /**
-   * Clean up game resources when unloaded
+   * Cleanup resources
    */
-  cleanup(): void {
+  public cleanup(): void {
     // Stop the game timer
     this.timer.stop();
 
-    // Stop any active sounds
-    this.gameService.stopAllSounds();
+    // Clean up input service
+    if (this.inputService) {
+      this.inputService.removeReceiver(this.mario);
+    }
 
-    // Clean up DOM elements
-    if (this.gameUI) {
+    // Clean up weather effects
+    if (this.weatherService) {
+      this.weatherService.cleanup();
+    }
+
+    // Clean up screen shake
+    if (this.screenShakeService) {
+      this.screenShakeService.cleanup();
+    }
+
+    // Clean up UI elements
+    if (this.gameUI && this.gameUI.parentNode) {
       this.gameUI.remove();
-      this.gameUI = null;
     }
 
-    if (this.debugPanel) {
+    if (this.debugPanel && this.debugPanel.parentNode) {
       this.debugPanel.remove();
-      this.debugPanel = null;
     }
 
-    if (this.pauseMenu) {
+    if (this.pauseMenu && this.pauseMenu.parentNode) {
       this.pauseMenu.remove();
-      this.pauseMenu = null;
     }
 
-    // Remove touch controls through the document
-    const touchControls = document.getElementById('touch-controls');
-    if (touchControls) {
-      touchControls.remove();
+    // Remove settings button if it exists
+    const settingsButton = document.getElementById('settings-button');
+    if (settingsButton && settingsButton.parentNode) {
+      settingsButton.remove();
     }
 
-    // Clean up asset references
+    // Remove any settings menu if open
+    const settingsMenu = document.getElementById('settings-menu');
+    if (settingsMenu && settingsMenu.parentNode) {
+      settingsMenu.remove();
+    }
+
+    // Remove achievement notifications container
+    const notificationsContainer = document.querySelector('.achievement-notifications');
+    if (notificationsContainer && notificationsContainer.parentNode) {
+      notificationsContainer.remove();
+    }
+
+    // Clear any interval timers
+    if (this._weatherInterval) {
+      clearInterval(this._weatherInterval);
+      this._weatherInterval = null;
+    }
+
+    // Clear references
     this.mario = null;
     this.currentLevel = null;
+
+    // For GC
+    window.mario = null;
   }
 
   async loadLevel(name: string) {
@@ -746,5 +838,388 @@ export default class Game {
 
       throw error;
     }
+  }
+
+  /**
+   * Apply current difficulty settings to game entities and parameters
+   */
+  private applyDifficultySettings(): void {
+    if (!this.mario || !this.currentLevel) {
+      return;
+    }
+
+    const params = this.difficultyService.getDifficultyParams();
+
+    // Apply jump height modifier if the player has a Jump trait
+    const jump = this.mario.traits.get(Function('return function Jump(){}').constructor);
+    if (jump && params.playerJumpHeight !== 1.0) {
+      // Only set this once
+      if (!jump.difficultyApplied) {
+        jump.velocity = PLAYER_JUMP_VELOCITY * params.playerJumpHeight;
+        jump.difficultyApplied = true;
+      }
+    }
+
+    // Apply enemy speed modifier to all enemies
+    // This would normally be handled by specific entity controllers in a larger implementation
+  }
+
+  /**
+   * Set up achievement listeners
+   */
+  private setupAchievementListeners(): void {
+    // Listen for achievement unlocks
+    this.achievementService.addListener((achievement) => {
+      // Show notification
+      this.achievementUI.show({
+        achievement,
+        timestamp: Date.now(),
+        displayed: false,
+      });
+
+      // Pause briefly for important achievements
+      if (achievement.id === 'all_levels' || achievement.id === 'no_damage') {
+        this.pause();
+        setTimeout(() => this.resume(), 2000);
+      }
+    });
+  }
+
+  /**
+   * Check for pending achievements and show notifications
+   */
+  private checkPendingAchievements(): void {
+    const pendingNotifications = this.achievementService.getPendingNotifications();
+    if (pendingNotifications.length > 0) {
+      this.achievementUI.showBatch(pendingNotifications);
+      this.achievementService.markNotificationsAsDisplayed(pendingNotifications);
+    }
+  }
+
+  /**
+   * Add random weather for demonstration
+   */
+  private addRandomWeather(): void {
+    const weatherTypes = [
+      WeatherType.CLEAR,
+      WeatherType.RAIN,
+      WeatherType.SNOW,
+      WeatherType.FOG,
+      WeatherType.WIND,
+    ];
+
+    // Start with clear weather
+    this.weatherService.setWeather(WeatherType.CLEAR);
+
+    // Change weather periodically
+    this._weatherInterval = setInterval(() => {
+      if (this._isPaused) return;
+
+      const randomType = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
+      const intensity = 0.3 + Math.random() * 0.7;
+      const duration = 20000 + Math.random() * 30000;
+
+      this.weatherService.setWeather(randomType, intensity, duration / 1000);
+    }, 50000); // Change every 50 seconds
+  }
+
+  /**
+   * Register a player death for difficulty adjustment
+   */
+  public registerPlayerDeath(): void {
+    this.difficultyService.registerDeath();
+    this.screenShakeService.playerDeath();
+  }
+
+  /**
+   * Register level completion for difficulty adjustment and achievements
+   */
+  public registerLevelCompletion(levelName: string, timeTaken: number): void {
+    this.difficultyService.registerLevelCompletion(timeTaken);
+
+    // Unlock level-specific achievements
+    if (levelName === '1-1') {
+      this.achievementService.unlockAchievement('level_1_1');
+    }
+
+    // Check for speedrun achievement
+    if (timeTaken < 100) {
+      this.achievementService.unlockAchievement('speedrun');
+    }
+  }
+
+  /**
+   * Create a settings menu dialog for the game
+   */
+  public showSettingsMenu(): void {
+    // Don't create multiple menus
+    if (document.getElementById('settings-menu')) {
+      return;
+    }
+
+    const wasRunning = !this._isPaused;
+    if (wasRunning) {
+      this.pause();
+    }
+
+    const menu = document.createElement('div');
+    menu.id = 'settings-menu';
+    menu.style.position = 'absolute';
+    menu.style.top = '50%';
+    menu.style.left = '50%';
+    menu.style.transform = 'translate(-50%, -50%)';
+    menu.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
+    menu.style.padding = '20px';
+    menu.style.color = 'white';
+    menu.style.borderRadius = '5px';
+    menu.style.zIndex = '1000';
+    menu.style.minWidth = '300px';
+
+    // Create title
+    const title = document.createElement('h2');
+    title.textContent = 'Settings';
+    title.style.textAlign = 'center';
+    title.style.marginTop = '0';
+    menu.appendChild(title);
+
+    // Weather section
+    const weatherSection = document.createElement('div');
+    weatherSection.style.marginBottom = '20px';
+
+    const weatherTitle = document.createElement('h3');
+    weatherTitle.textContent = 'Weather Effects';
+    weatherTitle.style.marginBottom = '10px';
+    weatherSection.appendChild(weatherTitle);
+
+    // Weather type selector
+    const weatherSelector = document.createElement('div');
+    weatherSelector.style.display = 'flex';
+    weatherSelector.style.justifyContent = 'space-between';
+    weatherSelector.style.marginBottom = '10px';
+
+    const weatherLabel = document.createElement('label');
+    weatherLabel.textContent = 'Current Weather:';
+    weatherSelector.appendChild(weatherLabel);
+
+    const weatherSelect = document.createElement('select');
+    const weatherTypes = [
+      { value: 'clear', label: 'Clear' },
+      { value: 'rain', label: 'Rain' },
+      { value: 'snow', label: 'Snow' },
+      { value: 'fog', label: 'Fog' },
+      { value: 'wind', label: 'Wind' },
+    ];
+
+    weatherTypes.forEach((type) => {
+      const option = document.createElement('option');
+      option.value = type.value;
+      option.textContent = type.label;
+      weatherSelect.appendChild(option);
+    });
+
+    weatherSelect.addEventListener('change', () => {
+      const selectedType = weatherSelect.value;
+      switch (selectedType) {
+        case 'clear':
+          this.weatherService.setWeather(WeatherType.CLEAR, 0.7);
+          break;
+        case 'rain':
+          this.weatherService.setWeather(WeatherType.RAIN, 0.7);
+          break;
+        case 'snow':
+          this.weatherService.setWeather(WeatherType.SNOW, 0.7);
+          break;
+        case 'fog':
+          this.weatherService.setWeather(WeatherType.FOG, 0.7);
+          break;
+        case 'wind':
+          this.weatherService.setWeather(WeatherType.WIND, 0.7);
+          break;
+      }
+    });
+
+    weatherSelector.appendChild(weatherSelect);
+    weatherSection.appendChild(weatherSelector);
+    menu.appendChild(weatherSection);
+
+    // Difficulty section
+    const difficultySection = document.createElement('div');
+    difficultySection.style.marginBottom = '20px';
+
+    const difficultyTitle = document.createElement('h3');
+    difficultyTitle.textContent = 'Difficulty';
+    difficultyTitle.style.marginBottom = '10px';
+    difficultySection.appendChild(difficultyTitle);
+
+    // Difficulty selector
+    const difficultySelector = document.createElement('div');
+    difficultySelector.style.display = 'flex';
+    difficultySelector.style.justifyContent = 'space-between';
+    difficultySelector.style.marginBottom = '10px';
+
+    const difficultyLabel = document.createElement('label');
+    difficultyLabel.textContent = 'Game Difficulty:';
+    difficultySelector.appendChild(difficultyLabel);
+
+    const difficultySelect = document.createElement('select');
+    const difficultyTypes = [
+      { value: 0, label: 'Very Easy' },
+      { value: 1, label: 'Easy' },
+      { value: 2, label: 'Normal' },
+      { value: 3, label: 'Hard' },
+      { value: 4, label: 'Very Hard' },
+    ];
+
+    difficultyTypes.forEach((type) => {
+      const option = document.createElement('option');
+      option.value = type.value.toString();
+      option.textContent = type.label;
+      difficultySelect.appendChild(option);
+    });
+
+    // Set current difficulty
+    difficultySelect.value = this.difficultyService.getDifficultyLevel().toString();
+
+    difficultySelect.addEventListener('change', () => {
+      const level = parseInt(difficultySelect.value, 10);
+      this.difficultyService.setDifficultyLevel(level);
+
+      // Reset difficulty-applied flags so they will be reapplied
+      if (this.mario) {
+        const jump = this.mario.traits.get(Function('return function Jump(){}').constructor);
+        if (jump) {
+          jump.difficultyApplied = false;
+        }
+      }
+    });
+
+    difficultySelector.appendChild(difficultySelect);
+    difficultySection.appendChild(difficultySelector);
+
+    // Auto-adjust toggle
+    const autoAdjustContainer = document.createElement('div');
+    autoAdjustContainer.style.display = 'flex';
+    autoAdjustContainer.style.justifyContent = 'space-between';
+    autoAdjustContainer.style.alignItems = 'center';
+
+    const autoAdjustLabel = document.createElement('label');
+    autoAdjustLabel.textContent = 'Dynamic Difficulty:';
+    autoAdjustContainer.appendChild(autoAdjustLabel);
+
+    const autoAdjustCheckbox = document.createElement('input');
+    autoAdjustCheckbox.type = 'checkbox';
+    autoAdjustCheckbox.checked = this.difficultyService.isAutoAdjustEnabled();
+
+    autoAdjustCheckbox.addEventListener('change', () => {
+      this.difficultyService.setAutoAdjust(autoAdjustCheckbox.checked);
+    });
+
+    autoAdjustContainer.appendChild(autoAdjustCheckbox);
+    difficultySection.appendChild(autoAdjustContainer);
+    menu.appendChild(difficultySection);
+
+    // Screen shake section
+    const shakeSection = document.createElement('div');
+    shakeSection.style.marginBottom = '20px';
+
+    const shakeTitle = document.createElement('h3');
+    shakeTitle.textContent = 'Screen Effects';
+    shakeTitle.style.marginBottom = '10px';
+    shakeSection.appendChild(shakeTitle);
+
+    // Screen shake toggle
+    const shakeContainer = document.createElement('div');
+    shakeContainer.style.display = 'flex';
+    shakeContainer.style.justifyContent = 'space-between';
+    shakeContainer.style.alignItems = 'center';
+    shakeContainer.style.marginBottom = '10px';
+
+    const shakeLabel = document.createElement('label');
+    shakeLabel.textContent = 'Screen Shake:';
+    shakeContainer.appendChild(shakeLabel);
+
+    const shakeCheckbox = document.createElement('input');
+    shakeCheckbox.type = 'checkbox';
+    shakeCheckbox.checked = this.screenShakeService.isEnabled();
+
+    shakeCheckbox.addEventListener('change', () => {
+      this.screenShakeService.setEnabled(shakeCheckbox.checked);
+    });
+
+    shakeContainer.appendChild(shakeCheckbox);
+    shakeSection.appendChild(shakeContainer);
+    menu.appendChild(shakeSection);
+
+    // Intensity slider
+    const intensityContainer = document.createElement('div');
+    intensityContainer.style.marginBottom = '10px';
+
+    const intensityLabel = document.createElement('label');
+    intensityLabel.textContent = 'Effect Intensity:';
+    intensityLabel.style.display = 'block';
+    intensityLabel.style.marginBottom = '5px';
+    intensityContainer.appendChild(intensityLabel);
+
+    const intensityControls = document.createElement('div');
+    intensityControls.style.display = 'flex';
+    intensityControls.style.alignItems = 'center';
+
+    const intensitySlider = document.createElement('input');
+    intensitySlider.type = 'range';
+    intensitySlider.min = '0';
+    intensitySlider.max = '2';
+    intensitySlider.step = '0.1';
+    intensitySlider.value = this.screenShakeService.getIntensityMultiplier().toString();
+    intensitySlider.style.flex = '1';
+
+    const intensityValue = document.createElement('span');
+    intensityValue.textContent = intensitySlider.value;
+    intensityValue.style.marginLeft = '10px';
+    intensityValue.style.width = '30px';
+    intensityValue.style.textAlign = 'center';
+
+    intensitySlider.addEventListener('input', () => {
+      const value = parseFloat(intensitySlider.value);
+      this.screenShakeService.setIntensityMultiplier(value);
+      intensityValue.textContent = value.toFixed(1);
+    });
+
+    intensityControls.appendChild(intensitySlider);
+    intensityControls.appendChild(intensityValue);
+    intensityContainer.appendChild(intensityControls);
+
+    // Test button
+    const testButton = document.createElement('button');
+    testButton.textContent = 'Test Effect';
+    testButton.style.marginTop = '5px';
+    testButton.style.padding = '5px 10px';
+    testButton.style.width = '100%';
+
+    testButton.addEventListener('click', () => {
+      this.screenShakeService.mediumImpact();
+    });
+
+    intensityContainer.appendChild(testButton);
+    shakeSection.appendChild(intensityContainer);
+    menu.appendChild(shakeSection);
+
+    // Close button
+    const closeButton = document.createElement('button');
+    closeButton.textContent = 'Close';
+    closeButton.style.padding = '10px';
+    closeButton.style.width = '100%';
+    closeButton.style.marginTop = '10px';
+
+    closeButton.addEventListener('click', () => {
+      menu.remove();
+      if (wasRunning) {
+        this.resume();
+      }
+    });
+
+    menu.appendChild(closeButton);
+
+    // Add menu to the body
+    document.body.appendChild(menu);
   }
 }
