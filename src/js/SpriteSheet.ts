@@ -2,7 +2,7 @@ export default class SpriteSheet {
   private image: HTMLImageElement;
   private width: number;
   private height: number;
-  private tiles: Map<string, HTMLCanvasElement[]>;
+  protected tiles: Map<string, HTMLCanvasElement[]>;
   private animations: Map<string, (distance: number) => string>;
 
   constructor(image: HTMLImageElement, width: number, height: number) {
@@ -54,6 +54,8 @@ export default class SpriteSheet {
     const buffer = this.tiles.get(name)?.[flip ? 1 : 0];
     if (buffer) {
       context.drawImage(buffer, x, y);
+    } else {
+      console.warn(`Sprite '${name}' not found`);
     }
   }
 
@@ -67,10 +69,19 @@ export default class SpriteSheet {
     const animation = this.animations.get(name);
     if (animation) {
       this.drawTile(animation(distance), context, x, y);
+    } else {
+      console.warn(`Animation '${name}' not found`);
     }
   }
 
   drawTile(name: string, context: CanvasRenderingContext2D, x: number, y: number): void {
     this.draw(name, context, x * this.width, y * this.height);
+  }
+
+  /**
+   * Check if a sprite with the given name exists
+   */
+  has(name: string): boolean {
+    return this.tiles.has(name);
   }
 }

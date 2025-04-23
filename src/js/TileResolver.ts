@@ -1,7 +1,14 @@
 import { Matrix } from './math';
 
+interface Tile {
+  style: string;
+  type?: string;
+  name?: string;
+  behavior?: string;
+}
+
 interface TileMatch {
-  tile: any;
+  tile: Tile;
   indexX: number;
   indexY: number;
   x1: number;
@@ -11,10 +18,10 @@ interface TileMatch {
 }
 
 export default class TileResolver {
-  matrix: Matrix<any>;
+  matrix: Matrix<Tile>;
   tileSize: number;
 
-  constructor(matrix: Matrix<any>, tileSize: number = 16) {
+  constructor(matrix: Matrix<Tile>, tileSize: number = 16) {
     this.matrix = matrix;
     this.tileSize = tileSize;
   }

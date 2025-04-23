@@ -4,19 +4,17 @@ import { loadPiranhaPlant } from './entities/PiranhaPlant.ts';
 import { loadBullet } from './entities/Bullet.ts';
 import { loadCannon } from './entities/Cannon.ts';
 import { loadBrickShrapnel } from './entities/BrickShrapnel.ts';
-import { loadPipePortal } from './entities/PipePortal.js';
+import { loadPipePortal } from './entities/PipePortal.ts';
 import { loadFlagPole } from './entities/FlagPole.ts';
 import { loadMario } from './entities/Mario.ts';
+import { EntityFactory, EntityFactories } from '../types/common';
+import Entity from './Entity.ts';
 
-// Define entity type interfaces
-interface Entity {
-  lifetime: number;
-  [key: string]: any;
-}
-
-type EntityFactory = () => Entity;
-type EntityFactories = Record<string, EntityFactory>;
-
+/**
+ * Create an entity pool for efficiency
+ * @param size Pool size
+ * @returns Factory function that reuses entities
+ */
 function createPool(size: number) {
   const pool: Entity[] = [];
 
@@ -26,19 +24,44 @@ function createPool(size: number) {
     }
 
     let count = 0;
-    return function pooledFactory(): Entity {
+    return function pooledFactory(props?: Record<string, any>): Entity {
       const entity = pool[count++ % pool.length];
       entity.lifetime = 0;
+
+      // Apply any props that were passed
+      if (props) {
+        Object.entries(props).forEach(([key, value]) => {
+          // @ts-expect-error - Dynamic property assignment
+          entity[key] = value;
+        });
+      }
+
       return entity;
     };
   };
 }
 
+/**
+ * Load all entity factories
+ * @param audioContext Audio context
+ * @returns Promise<EntityFactories>
+ */
 export async function loadEntities(audioContext: AudioContext): Promise<EntityFactories> {
   const entityFactories: EntityFactories = {};
 
-  function setup(loader: (context: AudioContext) => Promise<EntityFactory>) {
-    return loader(audioContext);
+  // Wrapper for entity loaders
+  function setup(loader: (context: AudioContext) => Promise<any>): Promise<EntityFactory> {
+    return loader(audioContext).then((factory) => {
+      // Convert any entity factory to a standard EntityFactory
+      return ((props?: Record<string, any>) => {
+        try {
+          return factory(props);
+        } catch (err) {
+          console.error('Entity factory error:', err);
+          throw err;
+        }
+      }) as EntityFactory;
+    });
   }
 
   function addAs(name: string) {

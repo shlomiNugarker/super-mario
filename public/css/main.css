@@ -1,22 +1,300 @@
 body {
-    background: #000;
-    margin: 0;
+  background: #000;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  /* align-items: center; */
+  height: 100vh;
+  overflow: hidden;
+  touch-action: none;
+  position: relative;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 #screen {
-    display: block;
-    image-rendering: pixelated;
-    margin: auto;
-    width: 100vw;
-    max-height: 100vh;
+  display: block;
+  image-rendering: pixelated;
+  box-shadow: 0 0 30px rgba(0, 0, 255, 0.3);
+  z-index: 1;
 }
 
+/* NES original aspect ratio (256x240) */
+.nes-aspect {
+  width: auto;
+  height: auto;
+  max-width: 100vmin;
+  max-height: calc(100vmin * 240 / 256);
+  object-fit: contain;
+}
+
+/* Game UI elements */
+#game-ui {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Touch controls */
+#touch-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 3;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.touch-dpad {
+  display: flex;
+  flex-wrap: wrap;
+  width: 150px;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.touch-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  pointer-events: auto;
+}
+
+.touch-btn {
+  background-color: rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  margin: 5px;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  pointer-events: auto;
+}
+
+.touch-btn:active {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.touch-jump {
+  background-color: rgba(255, 0, 0, 0.3);
+  border-color: rgba(255, 0, 0, 0.7);
+  width: 60px;
+  height: 60px;
+}
+
+.touch-run {
+  background-color: rgba(0, 0, 255, 0.3);
+  border-color: rgba(0, 0, 255, 0.7);
+}
+
+.touch-pause {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.5);
+  font-size: 20px;
+  margin-top: 20px;
+}
+
+/* Make touch controls responsive */
+@media (max-width: 480px) {
+  .touch-btn {
+    width: 35px;
+    height: 35px;
+    margin: 3px;
+    font-size: 14px;
+  }
+
+  .touch-jump {
+    width: 50px;
+    height: 50px;
+  }
+
+  .touch-dpad {
+    width: 120px;
+  }
+}
+
+/* Menu elements */
+.menu {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  border: 2px solid white;
+  border-radius: 10px;
+  padding: 20px;
+  color: white;
+  text-align: center;
+  z-index: 4;
+  min-width: 200px;
+}
+
+.menu-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.menu-button {
+  background-color: #333;
+  color: white;
+  border: 1px solid #666;
+  border-radius: 5px;
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.menu-button:hover {
+  background-color: #555;
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  body {
+    height: 100svh; /* Use small viewport height on mobile */
+  }
+
+  .nes-aspect {
+    max-width: 95vmin;
+    max-height: calc(95vmin * 240 / 256);
+  }
+}
+
+/* Hide touch controls on desktop */
+@media (hover: hover) and (pointer: fine) {
+  #touch-controls {
+    display: none;
+  }
+}
+
+/* Other aspect ratios for future use */
 .aspect-4-3 {
-    height: 75vw;
-    max-width: 133.3vh;
+  height: 75vw;
+  max-width: 133.3vh;
 }
 
 .aspect-16-9 {
-    height: 56.25vw;
-    max-width: 177.7vh;
+  height: 56.25vw;
+  max-width: 177.7vh;
+}
+
+.aspect-1-1 {
+  width: min(100vw, 100vh);
+  height: min(100vw, 100vh);
+}
+
+/* Loading indicator */
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 24px;
+  text-align: center;
+  z-index: 5;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 255, 0.5);
+  width: 300px;
+}
+
+.progress-container {
+  width: 100%;
+  height: 20px;
+  background-color: #333;
+  border-radius: 10px;
+  margin: 15px 0;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(to right, #3498db, #2ecc71);
+  width: 0%;
+  transition: width 0.3s ease;
+  border-radius: 10px;
+}
+
+.progress-text {
+  font-size: 18px;
+  margin-top: 5px;
+}
+
+.error-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(255, 0, 0, 0.8);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 80%;
+  font-size: 18px;
+  z-index: 100;
+  transition: opacity 1s ease;
+}
+
+.error-message.fade-out {
+  opacity: 0;
+}
+
+.loading::after {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  margin-left: 10px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Debug panel */
+#debug-panel {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: lime;
+  font-family: monospace;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  z-index: 6;
+  pointer-events: auto;
+  max-width: 300px;
+  display: none;
+}
+
+.debug-active #debug-panel {
+  display: block;
 }

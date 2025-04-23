@@ -1,5 +1,7 @@
-export function createCameraLayer(cameraToDraw: any) {
-  return function drawCameraRect(context: CanvasRenderingContext2D, fromCamera: any) {
+import Camera from '../Camera.ts';
+
+export function createCameraLayer(cameraToDraw: Camera) {
+  return function drawCameraRect(context: CanvasRenderingContext2D, fromCamera: Camera) {
     context.strokeStyle = 'purple';
     context.beginPath();
     context.rect(

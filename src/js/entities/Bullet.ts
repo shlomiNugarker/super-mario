@@ -5,6 +5,8 @@ import Gravity from '../traits/Gravity.ts';
 import Stomper from '../traits/Stomper.ts';
 import Velocity from '../traits/Velocity.ts';
 import { loadSpriteSheet } from '../loaders/sprite.ts';
+import Level from '../Level.ts';
+import SpriteSheet from '../SpriteSheet.ts';
 
 export function loadBullet() {
   return loadSpriteSheet('bullet').then(createBulletFactory);
@@ -35,7 +37,7 @@ class Behavior extends Trait {
     }
   }
 
-  update(entity: Entity, gameContext: { deltaTime: number }, level: any): void {
+  update(entity: Entity, gameContext: { deltaTime: number }, level: Level): void {
     const killable = entity.traits.get(Killable) as Killable;
     if (killable?.dead) {
       this.gravity.update(entity, gameContext, level);
@@ -43,7 +45,7 @@ class Behavior extends Trait {
   }
 }
 
-function createBulletFactory(sprite: any) {
+function createBulletFactory(sprite: SpriteSheet) {
   function drawBullet(this: Entity, context: CanvasRenderingContext2D): void {
     sprite.draw('bullet', context, 0, 0, this.vel.x > 0);
   }

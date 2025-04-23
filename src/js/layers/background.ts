@@ -1,11 +1,17 @@
 import TileResolver from '../TileResolver.ts';
+import { CANVAS_WIDTH, CANVAS_HEIGHT } from '../config.ts';
+import Level from '../Level.ts';
+import { Matrix } from '../math.ts';
+import { SpriteSheet } from '../../types/common.ts';
+import { Tile } from '../../types/level.ts';
+import Camera from '../Camera.ts';
 
-export function createBackgroundLayer(level: any, tiles: any, sprites: any) {
+export function createBackgroundLayer(level: Level, tiles: Matrix<Tile>, sprites: SpriteSheet) {
   const resolver = new TileResolver(tiles);
 
   const buffer = document.createElement('canvas');
-  buffer.width = 256 + 16;
-  buffer.height = 240;
+  buffer.width = CANVAS_WIDTH + 16;
+  buffer.height = CANVAS_HEIGHT;
 
   const context = buffer.getContext('2d');
 
@@ -15,18 +21,23 @@ export function createBackgroundLayer(level: any, tiles: any, sprites: any) {
     for (let x = startIndex; x <= endIndex; ++x) {
       const col = tiles.grid[x];
       if (col) {
-        col.forEach((tile: any, y: number) => {
-          if (sprites.animations.has(tile.style)) {
-            sprites.drawAnim(tile.style, context, x - startIndex, y, level.totalTime);
+        col.forEach((tile: Tile, y: number) => {
+          const animName = tile.style;
+          if (
+            sprites.animations &&
+            typeof sprites.animations.get === 'function' &&
+            sprites.animations.get(animName)
+          ) {
+            sprites.drawAnim(animName, context!, x - startIndex, y, level.totalTime);
           } else {
-            sprites.drawTile(tile.style, context, x - startIndex, y);
+            sprites.drawTile(tile.style, context!, x - startIndex, y);
           }
         });
       }
     }
   }
 
-  return function drawBackgroundLayer(context: any, camera: any) {
+  return function drawBackgroundLayer(context: CanvasRenderingContext2D, camera: Camera) {
     const drawWidth = resolver.toIndex(camera.size.x);
     const drawFrom = resolver.toIndex(camera.pos.x);
     const drawTo = drawFrom + drawWidth;

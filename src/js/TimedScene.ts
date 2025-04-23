@@ -1,17 +1,26 @@
 import Scene from './Scene.ts';
+import { GameContext } from '../types/common';
 
+/**
+ * Scene that automatically transitions after a countdown
+ */
 export default class TimedScene extends Scene {
-  countDown: number;
+  public countDown: number;
 
   constructor() {
     super();
     this.countDown = 2;
   }
 
-  update(gameContext: any): void {
+  /**
+   * Update the scene and countdown
+   * @param gameContext Game context
+   */
+  override update(gameContext: GameContext): void {
     this.countDown -= gameContext.deltaTime;
+
     if (this.countDown <= 0) {
-      this.events.emit(Scene.EVENT_COMPLETE);
+      this.complete();
     }
   }
 }

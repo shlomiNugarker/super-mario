@@ -7,6 +7,7 @@ type KeyCallback = (keyState: KeyState) => void;
 export default class KeyboardState {
   private keyStates: Map<string, KeyState>;
   private keyMap: Map<string, KeyCallback>;
+  private blocked: boolean;
 
   constructor() {
     // Holds the current state of a given key
@@ -14,6 +15,9 @@ export default class KeyboardState {
 
     // Holds the callback functions for a key code
     this.keyMap = new Map();
+
+    // Used to block input when needed
+    this.blocked = false;
   }
 
   addMapping(code: string, callback: KeyCallback): void {
@@ -21,6 +25,10 @@ export default class KeyboardState {
   }
 
   handleEvent(event: KeyboardEvent): void {
+    if (this.blocked) {
+      return;
+    }
+
     const { code } = event;
 
     if (!this.keyMap.has(code)) {
@@ -37,8 +45,12 @@ export default class KeyboardState {
     }
 
     this.keyStates.set(code, keyState);
+    console.log(`Key ${code} ${keyState === PRESSED ? 'pressed' : 'released'}`);
 
-    this.keyMap.get(code)!(keyState);
+    const callback = this.keyMap.get(code);
+    if (callback) {
+      callback(keyState);
+    }
   }
 
   listenTo(window: Window): void {
@@ -47,5 +59,34 @@ export default class KeyboardState {
         this.handleEvent(event as KeyboardEvent);
       });
     });
+
+    // Also clear key states when the window loses focus
+    window.addEventListener('blur', () => {
+      this.resetAllKeys();
+    });
+  }
+
+  // Reset all key states to RELEASED
+  resetAllKeys(): void {
+    const keys = [...this.keyStates.keys()];
+    keys.forEach((code) => {
+      if (this.keyStates.get(code) === PRESSED) {
+        this.keyStates.set(code, RELEASED);
+        const callback = this.keyMap.get(code);
+        if (callback) {
+          callback(RELEASED);
+        }
+      }
+    });
+  }
+
+  // Block input processing
+  block(): void {
+    this.blocked = true;
+  }
+
+  // Unblock input processing
+  unblock(): void {
+    this.blocked = false;
   }
 }

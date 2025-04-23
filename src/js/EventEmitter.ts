@@ -1,8 +1,8 @@
-interface Listener {
-  name: string;
-  callback: (...args: any[]) => void;
-}
+import { Listener, EventCallback } from '../types/common';
 
+/**
+ * Event emitter for handling event-based communication
+ */
 export default class EventEmitter {
   private listeners: Listener[];
 
@@ -10,16 +10,36 @@ export default class EventEmitter {
     this.listeners = [];
   }
 
-  listen(name: string, callback: (...args: any[]) => void): void {
-    const listener: Listener = { name, callback };
+  /**
+   * Listen for an event
+   * @param name Event name (string or symbol)
+   * @param callback Callback function
+   */
+  listen(name: string | symbol, callback: EventCallback): void {
+    const listener: Listener = { name, callback, count: Infinity };
     this.listeners.push(listener);
   }
 
-  emit(name: string, ...args: any[]): void {
+  /**
+   * Emit an event
+   * @param name Event name (string or symbol)
+   * @param args Arguments to pass to the callback
+   */
+  emit(name: string | symbol, ...args: unknown[]): void {
     this.listeners.forEach((listener) => {
       if (listener.name === name) {
         listener.callback(...args);
       }
     });
+  }
+
+  /**
+   * Process an event with a callback
+   * Used by the Trait class
+   * @param name Event name
+   * @param callback Callback to process
+   */
+  process(name: string | symbol, callback: EventCallback): void {
+    callback();
   }
 }

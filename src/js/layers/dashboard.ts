@@ -1,9 +1,13 @@
 import Player from '../traits/Player.ts';
 import LevelTimer from '../traits/LevelTimer.ts';
-import { findPlayers } from '../player.ts';
 import Entity from '../Entity.ts';
 
-export function createDashboardLayer(font: any, entity: Entity) {
+interface Font {
+  size: number;
+  print(text: string, context: CanvasRenderingContext2D, x: number, y: number): void;
+}
+
+export function createDashboardLayer(font: Font, entity: Entity) {
   const LINE1 = font.size * 2;
   const LINE2 = font.size * 3;
 

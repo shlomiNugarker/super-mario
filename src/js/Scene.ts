@@ -1,17 +1,13 @@
-import Compositor from './Compositor';
-import EventEmitter from './EventEmitter';
-import { Camera } from './debug';
+import Compositor from './Compositor.ts';
+import EventEmitter from './EventEmitter.ts';
+import { GameContext } from '../types/common';
+import { IScene } from '../types/level';
 
-interface GameContext {
-  videoContext: CanvasRenderingContext2D;
-  camera: Camera;
-}
-
-export default class Scene {
+export default class Scene implements IScene {
   static readonly EVENT_COMPLETE: string = 'scene complete';
 
-  protected events: EventEmitter;
-  protected comp: Compositor;
+  public events: EventEmitter;
+  public comp: Compositor;
 
   constructor() {
     this.events = new EventEmitter();
