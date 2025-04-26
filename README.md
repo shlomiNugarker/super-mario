@@ -1,124 +1,98 @@
-# Super Mario Game
+# Super Mario Game (Upgraded TypeScript Version)
 
-A TypeScript implementation of Super Mario using the HTML5 Canvas API.
+A modernized and enhanced version of the classic **Super Mario** game project originally developed by [Meth Meth Method](https://github.com/meth-meth-method/super-mario).
 
-## Project Structure
+This project rebuilds and refines the original structure with **TypeScript**, **audio integration**, **modular organization**, and a **production-ready build process**.
 
-The codebase is organized into several key directories:
+> **Note**: This project is intended for educational purposes and learning only.
 
-- `src/`: Main source code
-  - `js/`: Game logic and components
-    - `entities/`: Game entities (Mario, enemies, items)
-    - `traits/`: Component behaviors for entities
-    - `layers/`: Rendering layers
-    - `loaders/`: Asset loading utilities
-    - `services/`: Service classes for dependency injection
-    - `tiles/`: Tile behaviors
-  - `types/`: TypeScript interfaces and type definitions
-  - `public/`: Static assets (images, sounds, levels)
+---
 
-## Architecture
+## 🎮 Project Overview
 
-The game uses a component-based architecture:
+- Playable 2D Mario-style platformer
+- Powered by **HTML5 Canvas** and modern **TypeScript**
+- Built with a clean **Entity-Component-System** (ECS) architecture
+- Modular, scalable, and easy to expand
 
-1. **Entity System**: Entities have traits that define behavior
-2. **Traits System**: Reusable components that can be attached to entities
-3. **Layer System**: Rendering is done through composited layers
-4. **Event System**: Communication between components using events
-5. **Scene System**: Different game states are managed as scenes
-6. **Service System**: Dependency injection for shared resources
+---
 
-## Key Features
+## 🚀 Main Features
 
-- Type-safe entities and components
-- Event-driven architecture
-- Asset preloading
-- Object pooling for performance
-- Collision detection for tiles and entities
-- Scene management
-- Input handling
-- Audio playback
-- Save/load system
-- Debug mode
+- **Entity System**: Mario, Goombas, Koopas, Cannons, Piranha Plants, and more
+- **Physics Engine**: Gravity, jumping, collision detection
+- **Animation System**: Sprite management with timing control
+- **Audio System**: Integrated sound effects and background music
+- **Scene Management**: Loading screens, level transitions
+- **Input Handling**: Keyboard state tracking and custom input routing
+- **Asset Management**: Organized loading of sprites, audio, fonts, and levels
+- **Difficulty Service**: Dynamic game difficulty handling
+- **Achievement System**: Track player achievements (basic setup)
+- **Optimized Build**: Production build with minimized JS and asset organization
+- **TypeScript Full Migration**: Strong types and cleaner development experience
+- **Code Quality Tools**: ESLint, Prettier, TypeScript configuration
 
-## Controls
+---
 
-- **Arrow Keys**: Move Mario
-- **Space**: Jump
-- **Shift**: Run/Fire
-- **Escape**: Pause/Resume
-- **M**: Toggle Music
-- **S**: Toggle Sound Effects
-- **D**: Toggle Debug Mode
-- **F5**: Save Game
-- **F9**: Load Game
+## 🛠️ Technologies Used
 
-## Development
+- [TypeScript](https://www.typescriptlang.org/)
+- [HTML5 Canvas](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
+- [Modern JavaScript (ES6+)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+- [ESLint](https://eslint.org/) + [Prettier](https://prettier.io/) for code quality
+- Local static server for development
 
-### Prerequisites
+---
 
-- Node.js (v14+)
-- npm or yarn
+## 📂 Project Structure
 
-### Installation
+```
+src/
+ └── js/
+     ├── entities/       # All entity classes (Mario, Goomba, etc.)
+     ├── layers/         # Rendering layers
+     ├── loaders/        # Sprite, audio, level, and font loaders
+     ├── scenes/         # Scene management (loading screen, level runner)
+     ├── services/       # Game services (Achievements, Difficulty, Input, etc.)
+     ├── game.ts         # Game entry point
+     └── ...             # Utility and core logic files
+dist/
+ └── assets/             # Production JS bundle and audio assets
+```
+
+---
+
+## ⚡ Getting Started
+
+### Install a local server (optional)
+
+You need a local server because of ES module imports.
+
+You can use `vite`, `live-server`.
+
+Example using **Vite**:
 
 ```bash
-# Install dependencies
 npm install
-
-# Start development server
 npm run dev
+```
 
-# Build for production
+Then open your browser at `http://localhost:8000`
+
+### Build for production
+
+```bash
 npm run build
 ```
 
-## Refactoring Notes
+Resulting files will appear in `/dist`.
 
-This project has been refactored to improve:
+---
 
-1. **Type Safety**: Added proper TypeScript interfaces and reduced type assertions
-2. **Code Organization**: Better separation of concerns with services and types
-3. **Dependency Injection**: Centralized resource management
-4. **Configurability**: Central configuration system
-5. **Documentation**: Added JSDoc comments and this README
-6. **Save/Load**: Added game state persistence
-7. **Debugging**: Added debug overlay and tools
+---
 
-## Recent Code Refactoring
+## 📜 Credits
 
-The project has undergone significant refactoring to improve code organization and maintainability:
+- **Original Project**: [Meth Meth Method - Super Mario](https://github.com/meth-meth-method/super-mario)
 
-1. **Entry Point Migration**
-
-   - The game's entry point has been moved from `src/js/main.ts` to `src/main.ts`
-   - The old file is kept for reference but is no longer used
-
-2. **Game Class Implementation**
-
-   - Core game logic has been moved to a proper `Game` class in `src/js/game.ts`
-   - This improves encapsulation and makes the code more maintainable
-
-3. **Service Pattern**
-
-   - The code now uses a service pattern for various game subsystems
-   - Key services include:
-     - `GameService`: Core game state and rendering
-     - `InputService`: Unified input handling (keyboard and touch)
-     - `AssetService`: Asset loading and management
-     - `DebugService`: Debugging utilities
-     - `SaveService`: Game save/load functionality
-
-4. **Touch Control Improvements**
-
-   - Touch controls are now managed by the `InputService`
-   - This eliminates duplication that previously existed
-
-5. **Asset Loading Optimization**
-
-   - Added progressive asset loading with visual feedback
-   - Implemented preloading of essential assets
-
-6. **Type Safety Improvements**
-   - Added proper type assertions and null checks
-   - Fixed incompatible Font type issues
+---

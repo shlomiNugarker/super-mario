@@ -3,6 +3,7 @@ import Entity from '../Entity.ts';
 import { GameContext } from '../../types/common';
 import Level from '../Level.ts';
 import Jump from './Jump.ts';
+import { DRAG_FACTOR, PLAYER_ACCELERATION, PLAYER_DECELERATION } from '../config.ts';
 
 export default class Go extends Trait {
   dir: number;
@@ -18,9 +19,9 @@ export default class Go extends Trait {
     super();
 
     this.dir = 0;
-    this.acceleration = 400;
-    this.deceleration = 300;
-    this.dragFactor = 1 / 5000;
+    this.acceleration = PLAYER_ACCELERATION;
+    this.deceleration = PLAYER_DECELERATION;
+    this.dragFactor = DRAG_FACTOR;
 
     this.distance = 0;
     this.heading = 1;

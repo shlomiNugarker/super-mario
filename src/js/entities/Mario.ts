@@ -14,9 +14,11 @@ import { EntityFactoryOptions } from '../../types/entity';
 import SpriteSheet from '../SpriteSheet.ts';
 import AudioBoard from '../AudioBoard.ts';
 import { InputEvent, InputEventTypes, InputReceiver } from '../../types/input';
+import { FRICTION, FRICTION_FAST, PLAYER_JUMP_VELOCITY } from '../config.ts';
 
-const SLOW_DRAG = 1 / 1000;
-const FAST_DRAG = 1 / 5000;
+// Use config constants for drag values
+const SLOW_DRAG = FRICTION;
+const FAST_DRAG = FRICTION_FAST;
 
 export function loadMario(audioContext: AudioContext) {
   return Promise.all([loadSpriteSheet('mario'), loadAudioBoard('mario', audioContext)]).then(
@@ -129,7 +131,7 @@ function createMarioFactory(sprite: SpriteSheet, audio: AudioBoard) {
 
     const jump = mario.getJumpTrait();
     if (jump) {
-      jump.velocity = options?.jumpVelocity || 175;
+      jump.velocity = options?.jumpVelocity || PLAYER_JUMP_VELOCITY;
     }
 
     mario.turbo = function (turboOn: boolean): void {

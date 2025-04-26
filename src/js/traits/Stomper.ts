@@ -1,6 +1,7 @@
 import Trait from '../Trait.ts';
 import Killable from './Killable.ts';
 import Entity from '../Entity.ts';
+import { PLAYER_BOUNCE_SPEED } from '../config.ts';
 
 export default class Stomper extends Trait {
   static EVENT_STOMP = Symbol('stomp');
@@ -8,7 +9,7 @@ export default class Stomper extends Trait {
 
   constructor() {
     super();
-    this.bounceSpeed = 400;
+    this.bounceSpeed = PLAYER_BOUNCE_SPEED;
   }
 
   bounce(us: Entity, them: Entity): void {

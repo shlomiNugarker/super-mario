@@ -13,7 +13,13 @@ import SceneRunner from './SceneRunner.ts';
 import Scene from './Scene.ts';
 import TimedScene from './TimedScene.ts';
 import { LevelEvents } from '../types/level';
-import { CANVAS_WIDTH, CANVAS_HEIGHT, DEBUG_COLLISIONS, PLAYER_JUMP_VELOCITY } from './config.ts';
+import {
+  CANVAS_WIDTH,
+  CANVAS_HEIGHT,
+  DEBUG_COLLISIONS,
+  PLAYER_JUMP_VELOCITY,
+  TARGET_FRAME_RATE,
+} from './config.ts';
 import Pipe from './traits/Pipe.ts';
 import { connectEntity } from './traits/Pipe.ts';
 import GameService from './services/GameService.ts';
@@ -75,7 +81,7 @@ export default class Game {
     this.screenShakeService = ScreenShakeService.getInstance();
     this.achievementUI = new AchievementNotificationUI();
     this.sceneRunner = new SceneRunner();
-    this.timer = new Timer(1 / 60);
+    this.timer = new Timer(1 / TARGET_FRAME_RATE);
     this.mario = null;
     this.currentLevel = null;
     this._isPaused = false;

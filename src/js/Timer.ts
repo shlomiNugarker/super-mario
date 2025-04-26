@@ -1,3 +1,5 @@
+import { TARGET_FRAME_RATE } from './config.ts';
+
 /**
  * Game timer that handles animation frame timing and delta time calculation
  * Controls the main game loop timing and provides consistent update intervals
@@ -29,10 +31,10 @@ export default class Timer {
 
   /**
    * Constructor
-   * @param deltaTime Fixed delta time for updates (default: 1/60 second)
+   * @param deltaTime Fixed delta time for updates (default: 1/TARGET_FRAME_RATE second)
    * @param maxDeltaTime Maximum allowed delta time to prevent spiral of death (default: 0.5 seconds)
    */
-  constructor(deltaTime: number = 1 / 60, maxDeltaTime: number = 0.5) {
+  constructor(deltaTime: number = 1 / TARGET_FRAME_RATE, maxDeltaTime: number = 0.5) {
     let accumulatedTime = 0;
     let lastTime: number | null = null;
     this.maxDeltaTime = maxDeltaTime;

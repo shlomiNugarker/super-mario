@@ -1,7 +1,6 @@
 import Trait from '../Trait.ts';
 import Stomper from './Stomper.ts';
-
-const COIN_LIFE_THRESHOLD = 100;
+import { COIN_LIFE_THRESHOLD, PLAYER_STARTING_LIVES } from '../config.ts';
 
 export default class Player extends Trait {
   name: string;
@@ -15,7 +14,7 @@ export default class Player extends Trait {
     this.name = 'UNNAMED';
     this.world = 'UNKNOWN';
     this.coins = 0;
-    this.lives = 3;
+    this.lives = PLAYER_STARTING_LIVES;
     this.score = 0;
 
     this.listen(Stomper.EVENT_STOMP, () => {

@@ -1,5 +1,6 @@
 import { Sides } from '../Entity.ts';
 import Trait from '../Trait.ts';
+import { PLAYER_JUMP_DURATION, PLAYER_JUMP_GRACE_PERIOD, PLAYER_JUMP_VELOCITY } from '../config.ts';
 
 // We'll use a type that just ensures the essential properties we need
 type EntityWithSounds = {
@@ -23,12 +24,12 @@ export default class Jump extends Trait {
     super();
 
     this.ready = 0;
-    this.duration = 0.3;
+    this.duration = PLAYER_JUMP_DURATION;
     this.engageTime = 0;
     this.requestTime = 0;
-    this.gracePeriod = 0.1;
+    this.gracePeriod = PLAYER_JUMP_GRACE_PERIOD;
     this.speedBoost = 0.3;
-    this.velocity = 200;
+    this.velocity = PLAYER_JUMP_VELOCITY;
   }
 
   get falling(): boolean {
