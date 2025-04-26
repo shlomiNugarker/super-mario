@@ -367,6 +367,19 @@ const showLevelSelectionScreen = (startScreen: HTMLElement) => {
     '5-3',
     '7-2',
     '7-3',
+    'coin-clouds-1',
+    'coin-room-1',
+    'coin-room-2',
+    'coin-room-3',
+    'coin-room-4',
+    'coin-room-5',
+    'debug-coin',
+    'debug-flag',
+    'debug-level',
+    'debug-pipe',
+    'debug-progression',
+    'uw-entrance',
+    'uw-exit',
   ];
 
   // Create a grid of level buttons
