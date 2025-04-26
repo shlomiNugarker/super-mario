@@ -36,287 +36,6 @@ declare global {
 }
 
 /**
- * UIManager class to handle all UI-related functionality
- */
-class UIManager {
-  public gameUI: HTMLElement | null = null;
-  public pauseMenu: HTMLElement | null = null;
-  public debugPanel: HTMLElement | null = null;
-  public loadingElement: HTMLElement | null = null;
-  private game: Game;
-
-  constructor(game: Game) {
-    this.game = game;
-  }
-
-  /**
-   * Initialize UI components
-   */
-  init(): void {
-    this.createGameUI();
-    this.createLoadingIndicator();
-    this.setupDebugPanel();
-  }
-
-  /**
-   * Create the main game UI container
-   */
-  createGameUI(): void {
-    // Create a container for all UI elements
-    this.gameUI = document.createElement('div');
-    this.gameUI.className = 'game-ui';
-    document.body.appendChild(this.gameUI);
-
-    // Create pause menu (hidden by default)
-    this.createPauseMenu();
-  }
-
-  /**
-   * Create loading indicator
-   * @returns The loading indicator element
-   */
-  createLoadingIndicator(): HTMLElement {
-    // First remove any existing loading indicator
-    this.removeLoadingElement();
-
-    const loadingElement = document.createElement('div');
-    loadingElement.className = 'loading-indicator';
-
-    // Use fixed positioning to prevent affecting page layout
-    loadingElement.style.position = 'fixed';
-    loadingElement.style.top = '50%';
-    loadingElement.style.left = '50%';
-    loadingElement.style.transform = 'translate(-50%, -50%)';
-    loadingElement.style.zIndex = '9999';
-    loadingElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-    loadingElement.style.padding = '20px';
-    loadingElement.style.borderRadius = '8px';
-    loadingElement.style.boxShadow = '0 0 20px rgba(0, 0, 0, 0.5)';
-    loadingElement.style.textAlign = 'center';
-
-    loadingElement.innerHTML = `
-      <div class="loading-spinner" style="margin-bottom: 10px; width: 40px; height: 40px; border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s linear infinite; margin: 0 auto;"></div>
-      <div class="loading-text" style="color: white; font-family: sans-serif; margin: 10px 0;">Loading assets...</div>
-      <div class="loading-progress-container" style="width: 200px; height: 10px; background-color: rgba(255, 255, 255, 0.2); border-radius: 5px; overflow: hidden; margin: 10px auto;">
-        <div class="loading-progress-bar" style="width: 0%; height: 100%; background-color: #e52521; transition: width 0.3s;"></div>
-      </div>
-    `;
-
-    // Add animation keyframes
-    const styleSheet = document.createElement('style');
-    styleSheet.textContent = `
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    `;
-    document.head.appendChild(styleSheet);
-
-    document.body.appendChild(loadingElement);
-    this.loadingElement = loadingElement;
-    return loadingElement;
-  }
-
-  /**
-   * Setup debug panel
-   */
-  setupDebugPanel(): void {
-    this.debugPanel = document.createElement('div');
-    this.debugPanel.className = 'debug-panel';
-    this.debugPanel.style.display = 'none';
-    if (this.gameUI) {
-      this.gameUI.appendChild(this.debugPanel);
-    } else {
-      document.body.appendChild(this.debugPanel);
-    }
-  }
-
-  /**
-   * Update debug panel with current debug info
-   * @param debugService Debug service
-   */
-  updateDebugPanel(debugService: DebugService): void {
-    if (this.debugPanel) {
-      this.debugPanel.innerHTML = '';
-      const debugInfo = debugService.getDebugInfo();
-
-      Object.entries(debugInfo).forEach(([key, value]) => {
-        const item = document.createElement('div');
-        item.className = 'debug-item';
-        item.innerHTML = `<span class="debug-key">${key}:</span> <span class="debug-value">${value}</span>`;
-        this.debugPanel?.appendChild(item);
-      });
-    }
-  }
-
-  /**
-   * Update loading progress
-   * @param progress Progress object with percentage
-   */
-  updateLoadingProgress(progress: { percentage: number }): void {
-    if (!this.loadingElement) {
-      return;
-    }
-
-    const progressBar = this.loadingElement.querySelector('.loading-progress-bar');
-    const progressText = this.loadingElement.querySelector('.loading-text');
-
-    if (progressBar && progressText) {
-      progressBar.setAttribute(
-        'style',
-        `width: ${progress.percentage}%; height: 100%; background-color: #e52521; transition: width 0.3s;`
-      );
-      progressText.textContent = `Loading assets... ${Math.round(progress.percentage)}%`;
-
-      // When loading is complete, fade out and remove
-      if (progress.percentage >= 100) {
-        setTimeout(() => {
-          this.removeLoadingElement();
-        }, 500);
-      }
-    }
-  }
-
-  /**
-   * Create pause menu
-   */
-  createPauseMenu(): void {
-    this.pauseMenu = document.createElement('div');
-    this.pauseMenu.className = 'pause-menu';
-    this.pauseMenu.style.display = 'none';
-
-    // Title
-    const title = document.createElement('h2');
-    title.textContent = 'GAME PAUSED';
-    this.pauseMenu.appendChild(title);
-
-    // Menu options
-    const resumeBtn = this.createMenuButton('Resume Game', () => this.game.resume());
-    const musicBtn = this.createMenuButton('Toggle Music', () => this.game.toggleMusic());
-    const soundBtn = this.createMenuButton('Toggle Sound', () => this.game.toggleSound());
-    const saveBtn = this.createMenuButton('Save Game', () => this.game.saveGame());
-    const settingsBtn = this.createMenuButton('Settings', () => this.game.showSettingsMenu());
-    const restartBtn = this.createMenuButton('Restart Level', () => {
-      this.hidePauseMenu();
-      this.game.resume();
-      this.game.restartLevel();
-    });
-
-    // Add buttons to menu
-    this.pauseMenu.appendChild(resumeBtn);
-    this.pauseMenu.appendChild(musicBtn);
-    this.pauseMenu.appendChild(soundBtn);
-    this.pauseMenu.appendChild(saveBtn);
-    this.pauseMenu.appendChild(settingsBtn);
-    this.pauseMenu.appendChild(restartBtn);
-
-    // Add to game UI
-    if (this.gameUI) {
-      this.gameUI.appendChild(this.pauseMenu);
-    } else {
-      document.body.appendChild(this.pauseMenu);
-    }
-  }
-
-  /**
-   * Create a menu button
-   * @param text Button text
-   * @param onClick Click handler
-   * @returns The button element
-   */
-  private createMenuButton(text: string, onClick: () => void): HTMLElement {
-    const button = document.createElement('button');
-    button.className = 'menu-button';
-    button.textContent = text;
-    button.addEventListener('click', onClick);
-    return button;
-  }
-
-  /**
-   * Show pause menu
-   */
-  showPauseMenu(): void {
-    if (this.pauseMenu) {
-      this.pauseMenu.style.display = 'flex';
-    }
-  }
-
-  /**
-   * Hide pause menu
-   */
-  hidePauseMenu(): void {
-    if (this.pauseMenu) {
-      this.pauseMenu.style.display = 'none';
-    }
-  }
-
-  /**
-   * Show debug panel
-   */
-  showDebugPanel(): void {
-    if (this.debugPanel) {
-      this.debugPanel.style.display = 'block';
-    }
-  }
-
-  /**
-   * Hide debug panel
-   */
-  hideDebugPanel(): void {
-    if (this.debugPanel) {
-      this.debugPanel.style.display = 'none';
-    }
-  }
-
-  /**
-   * Toggle debug panel visibility
-   */
-  toggleDebugPanel(): void {
-    if (this.debugPanel) {
-      if (this.debugPanel.style.display === 'none') {
-        this.showDebugPanel();
-      } else {
-        this.hideDebugPanel();
-      }
-    }
-  }
-
-  /**
-   * Clear all UI elements
-   */
-  cleanup(): void {
-    if (this.gameUI) {
-      document.body.removeChild(this.gameUI);
-      this.gameUI = null;
-    }
-
-    if (this.loadingElement) {
-      document.body.removeChild(this.loadingElement);
-      this.loadingElement = null;
-    }
-
-    this.pauseMenu = null;
-    this.debugPanel = null;
-  }
-
-  removeLoadingElement(): void {
-    if (this.loadingElement && this.loadingElement.parentNode) {
-      // Add fade out animation
-      this.loadingElement.style.transition = 'opacity 0.5s';
-      this.loadingElement.style.opacity = '0';
-
-      // Remove from DOM after animation completes
-      setTimeout(() => {
-        if (this.loadingElement && this.loadingElement.parentNode) {
-          this.loadingElement.remove();
-          this.loadingElement = null;
-        }
-      }, 500);
-    }
-  }
-}
-
-/**
  * Game class
  */
 export default class Game {
@@ -335,8 +54,10 @@ export default class Game {
   private mario: any;
   private currentLevel: any;
   private _isPaused: boolean;
+  private pauseMenu: HTMLElement | null;
+  private gameUI: HTMLElement | null;
+  private debugPanel: HTMLElement | null;
   private _weatherInterval: number | null = null;
-  private uiManager: UIManager;
 
   /**
    * Constructor
@@ -358,7 +79,9 @@ export default class Game {
     this.mario = null;
     this.currentLevel = null;
     this._isPaused = false;
-    this.uiManager = new UIManager(this);
+    this.pauseMenu = null;
+    this.gameUI = null;
+    this.debugPanel = null;
   }
 
   /**
@@ -369,8 +92,12 @@ export default class Game {
     this.canvas.width = CANVAS_WIDTH;
     this.canvas.height = CANVAS_HEIGHT;
 
-    // Initialize UI
-    this.uiManager.init();
+    // Create UI elements
+    this.createGameUI();
+
+    // Create loading indicator
+    const loadingElement = this.createLoadingIndicator();
+    document.body.appendChild(loadingElement);
 
     const videoContext = this.canvas.getContext('2d');
     if (!videoContext) {
@@ -394,6 +121,9 @@ export default class Game {
       }
     });
 
+    // Set up debug panel
+    this.setupDebugPanel();
+
     // Check for pending achievement notifications
     this.checkPendingAchievements();
 
@@ -405,7 +135,7 @@ export default class Game {
 
         assetService.preloadAllInBackground((progress) => {
           // Update loading progress
-          this.uiManager.updateLoadingProgress(progress);
+          this.updateLoadingProgress(loadingElement, progress);
         });
       } catch (assetError) {
         console.warn('Asset preloading error, continuing anyway:', assetError);
@@ -464,26 +194,25 @@ export default class Game {
         }
 
         // Update debug panel
-        this.uiManager.updateDebugPanel(this.debugService);
+        this.updateDebugPanel();
       };
 
       // Set up achievement listeners
       this.setupAchievementListeners();
 
-      // Start the timer
-      this.timer.start();
+      await this.startWorld('1-1', loadLevel);
 
-      // Ensure loading indicator is removed
-      this.clearAllLoadingIndicators();
-      this.uiManager.removeLoadingElement();
-
-      // Load saved game or start a new one
-      const hasSavedGame = await this.loadGame(loadLevel);
-      if (!hasSavedGame) {
-        await this.startWorld('1-1', loadLevel);
+      // Remove loading indicator after initialization
+      if (loadingElement && loadingElement.parentNode) {
+        loadingElement.remove();
       }
 
-      // Set up random weather changes
+      // Make sure ALL loading indicators are gone
+      this.clearAllLoadingIndicators();
+
+      this.timer.start();
+
+      // Add random weather to demo the feature
       this.addRandomWeather();
     } catch (error) {
       console.error('Error initializing game:', error);
@@ -495,9 +224,387 @@ export default class Game {
       document.body.appendChild(errorMsg);
 
       // Remove loading indicator
-      this.clearAllLoadingIndicators();
-      this.uiManager.removeLoadingElement();
+      if (loadingElement && loadingElement.parentNode) {
+        loadingElement.remove();
+      }
     }
+  }
+
+  /**
+   * Create the game UI
+   */
+  private createGameUI(): void {
+    // Create UI container
+    this.gameUI = document.createElement('div');
+    this.gameUI.id = 'game-ui';
+    document.body.appendChild(this.gameUI);
+
+    // Create debug panel
+    this.debugPanel = document.createElement('div');
+    this.debugPanel.id = 'debug-panel';
+    document.body.appendChild(this.debugPanel);
+
+    // Create settings button
+    const settingsButton = document.createElement('button');
+    settingsButton.id = 'settings-button';
+    settingsButton.textContent = '⚙️'; // Gear emoji
+    settingsButton.style.position = 'absolute';
+    settingsButton.style.top = '10px';
+    settingsButton.style.right = '10px';
+    settingsButton.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+    settingsButton.style.color = 'white';
+    settingsButton.style.border = 'none';
+    settingsButton.style.borderRadius = '5px';
+    settingsButton.style.padding = '5px 10px';
+    settingsButton.style.fontSize = '20px';
+    settingsButton.style.cursor = 'pointer';
+    settingsButton.style.zIndex = '100';
+    settingsButton.title = 'Settings';
+
+    settingsButton.addEventListener('click', () => {
+      this.showSettingsMenu();
+    });
+
+    document.body.appendChild(settingsButton);
+
+    // Note: Touch controls are now handled by InputService
+    // No need to call createTouchControls() here
+  }
+
+  /**
+   * Update the debug panel with current debug info
+   */
+  private updateDebugPanel(): void {
+    if (!this.debugPanel) return;
+
+    if (this.debugService.isEnabled()) {
+      document.body.classList.add('debug-active');
+
+      const debugInfo = this.debugService.getAll();
+      let html = '';
+
+      for (const [key, value] of Object.entries(debugInfo)) {
+        html += `<div><strong>${key}:</strong> ${value}</div>`;
+      }
+
+      this.debugPanel.innerHTML = html;
+    } else {
+      document.body.classList.remove('debug-active');
+    }
+  }
+
+  /**
+   * Set up debug panel
+   */
+  private setupDebugPanel(): void {
+    // Setup initial state
+    this.updateDebugPanel();
+  }
+
+  /**
+   * Create a pause menu
+   */
+  private createPauseMenu(): void {
+    // Check if menu already exists
+    if (this.pauseMenu) {
+      return;
+    }
+
+    // Create menu container
+    this.pauseMenu = document.createElement('div');
+    this.pauseMenu.className = 'menu';
+
+    // Add blur effect
+    this.canvas.style.transition = 'filter 0.3s ease';
+    this.canvas.style.filter = 'blur(5px) brightness(0.7)';
+
+    // Create header
+    const header = document.createElement('div');
+    header.style.marginBottom = '25px';
+
+    const title = document.createElement('h2');
+    title.textContent = 'GAME PAUSED';
+    title.style.color = 'var(--mario-yellow)';
+    title.style.fontFamily = "'Press Start 2P', sans-serif";
+    title.style.textAlign = 'center';
+    title.style.fontSize = '18px';
+    title.style.marginBottom = '10px';
+    title.style.textShadow = '2px 2px 0 rgba(0, 0, 0, 0.5)';
+    header.appendChild(title);
+
+    this.pauseMenu.appendChild(header);
+
+    // Create buttons container
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.style.display = 'flex';
+    buttonsContainer.style.flexDirection = 'column';
+    buttonsContainer.style.gap = '10px';
+    buttonsContainer.style.marginBottom = '20px';
+
+    // Resume button
+    const resumeButton = document.createElement('button');
+    resumeButton.className = 'menu-button';
+    resumeButton.innerHTML = '<span style="margin-right: 10px">▶</span> Resume Game';
+    resumeButton.addEventListener('click', () => this.resume());
+    buttonsContainer.appendChild(resumeButton);
+
+    // Restart button
+    const restartButton = document.createElement('button');
+    restartButton.className = 'menu-button';
+    restartButton.style.backgroundColor = 'var(--mario-blue)';
+    restartButton.style.boxShadow = '0 4px 0 #2a5adf';
+    restartButton.innerHTML = '<span style="margin-right: 10px">↻</span> Restart Level';
+    restartButton.addEventListener('click', () => this.restartLevel());
+    buttonsContainer.appendChild(restartButton);
+
+    // Save button
+    const saveButton = document.createElement('button');
+    saveButton.className = 'menu-button';
+    saveButton.style.backgroundColor = 'var(--mario-green)';
+    saveButton.style.boxShadow = '0 4px 0 #2e8534';
+    saveButton.innerHTML = '<span style="margin-right: 10px">💾</span> Save Game';
+    saveButton.addEventListener('click', () => {
+      this.saveGame();
+
+      // Show save confirmation
+      const saveConfirm = document.createElement('div');
+      saveConfirm.textContent = 'Game Saved!';
+      saveConfirm.className = 'game-notification';
+      document.body.appendChild(saveConfirm);
+
+      // Animate notification
+      setTimeout(() => {
+        saveConfirm.classList.add('visible');
+
+        setTimeout(() => {
+          saveConfirm.classList.remove('visible');
+          setTimeout(() => saveConfirm.remove(), 300);
+        }, 2000);
+      }, 10);
+    });
+    buttonsContainer.appendChild(saveButton);
+
+    this.pauseMenu.appendChild(buttonsContainer);
+
+    // Settings section
+    const settingsContainer = document.createElement('div');
+    settingsContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+    settingsContainer.style.padding = '15px';
+    settingsContainer.style.borderRadius = '8px';
+    settingsContainer.style.marginBottom = '20px';
+
+    const settingsTitle = document.createElement('div');
+    settingsTitle.textContent = 'SETTINGS';
+    settingsTitle.style.color = 'var(--mario-yellow)';
+    settingsTitle.style.fontFamily = "'Press Start 2P', sans-serif";
+    settingsTitle.style.textAlign = 'center';
+    settingsTitle.style.fontSize = '12px';
+    settingsTitle.style.marginBottom = '10px';
+    settingsContainer.appendChild(settingsTitle);
+
+    // Toggle buttons container
+    const togglesContainer = document.createElement('div');
+    togglesContainer.style.display = 'grid';
+    togglesContainer.style.gridTemplateColumns = '1fr auto';
+    togglesContainer.style.gap = '10px';
+    togglesContainer.style.alignItems = 'center';
+
+    // Music toggle
+    const musicLabel = document.createElement('div');
+    musicLabel.textContent = 'Music';
+    musicLabel.style.color = 'white';
+    musicLabel.style.fontSize = '12px';
+    togglesContainer.appendChild(musicLabel);
+
+    const musicToggle = document.createElement('button');
+    musicToggle.className = 'menu-button';
+    musicToggle.style.padding = '8px 15px';
+    musicToggle.style.fontSize = '10px';
+    musicToggle.style.margin = '0';
+    musicToggle.textContent = this.gameService.isMusicEnabled() ? 'ON' : 'OFF';
+    musicToggle.style.backgroundColor = this.gameService.isMusicEnabled()
+      ? 'var(--mario-green)'
+      : '#777';
+    musicToggle.style.boxShadow = this.gameService.isMusicEnabled()
+      ? '0 3px 0 #2e8534'
+      : '0 3px 0 #555';
+
+    musicToggle.addEventListener('click', () => {
+      this.toggleMusic();
+      musicToggle.textContent = this.gameService.isMusicEnabled() ? 'ON' : 'OFF';
+      musicToggle.style.backgroundColor = this.gameService.isMusicEnabled()
+        ? 'var(--mario-green)'
+        : '#777';
+      musicToggle.style.boxShadow = this.gameService.isMusicEnabled()
+        ? '0 3px 0 #2e8534'
+        : '0 3px 0 #555';
+    });
+
+    togglesContainer.appendChild(musicToggle);
+
+    // Sound toggle
+    const soundLabel = document.createElement('div');
+    soundLabel.textContent = 'Sound FX';
+    soundLabel.style.color = 'white';
+    soundLabel.style.fontSize = '12px';
+    togglesContainer.appendChild(soundLabel);
+
+    const soundToggle = document.createElement('button');
+    soundToggle.className = 'menu-button';
+    soundToggle.style.padding = '8px 15px';
+    soundToggle.style.fontSize = '10px';
+    soundToggle.style.margin = '0';
+    soundToggle.textContent = this.gameService.isSoundEnabled() ? 'ON' : 'OFF';
+    soundToggle.style.backgroundColor = this.gameService.isSoundEnabled()
+      ? 'var(--mario-green)'
+      : '#777';
+    soundToggle.style.boxShadow = this.gameService.isSoundEnabled()
+      ? '0 3px 0 #2e8534'
+      : '0 3px 0 #555';
+
+    soundToggle.addEventListener('click', () => {
+      this.toggleSound();
+      soundToggle.textContent = this.gameService.isSoundEnabled() ? 'ON' : 'OFF';
+      soundToggle.style.backgroundColor = this.gameService.isSoundEnabled()
+        ? 'var(--mario-green)'
+        : '#777';
+      soundToggle.style.boxShadow = this.gameService.isSoundEnabled()
+        ? '0 3px 0 #2e8534'
+        : '0 3px 0 #555';
+    });
+
+    togglesContainer.appendChild(soundToggle);
+
+    // Debug toggle
+    const debugLabel = document.createElement('div');
+    debugLabel.textContent = 'Debug Mode';
+    debugLabel.style.color = 'white';
+    debugLabel.style.fontSize = '12px';
+    togglesContainer.appendChild(debugLabel);
+
+    const debugToggle = document.createElement('button');
+    debugToggle.className = 'menu-button';
+    debugToggle.style.padding = '8px 15px';
+    debugToggle.style.fontSize = '10px';
+    debugToggle.style.margin = '0';
+    debugToggle.textContent = this.debugService.isEnabled() ? 'ON' : 'OFF';
+    debugToggle.style.backgroundColor = this.debugService.isEnabled()
+      ? 'var(--mario-green)'
+      : '#777';
+    debugToggle.style.boxShadow = this.debugService.isEnabled()
+      ? '0 3px 0 #2e8534'
+      : '0 3px 0 #555';
+
+    debugToggle.addEventListener('click', () => {
+      this.toggleDebug();
+      debugToggle.textContent = this.debugService.isEnabled() ? 'ON' : 'OFF';
+      debugToggle.style.backgroundColor = this.debugService.isEnabled()
+        ? 'var(--mario-green)'
+        : '#777';
+      debugToggle.style.boxShadow = this.debugService.isEnabled()
+        ? '0 3px 0 #2e8534'
+        : '0 3px 0 #555';
+    });
+
+    togglesContainer.appendChild(debugToggle);
+
+    settingsContainer.appendChild(togglesContainer);
+    this.pauseMenu.appendChild(settingsContainer);
+
+    // Controls reminder
+    const controlsReminder = document.createElement('div');
+    controlsReminder.style.fontSize = '10px';
+    controlsReminder.style.color = 'rgba(255, 255, 255, 0.7)';
+    controlsReminder.style.textAlign = 'center';
+    controlsReminder.textContent = 'Press ESC to resume';
+    this.pauseMenu.appendChild(controlsReminder);
+
+    // Add the menu to the body
+    document.body.appendChild(this.pauseMenu);
+
+    // Add entry animation
+    if (this.pauseMenu) {
+      this.pauseMenu.style.opacity = '0';
+      this.pauseMenu.style.transform = 'translate(-50%, -55%)';
+
+      setTimeout(() => {
+        if (this.pauseMenu) {
+          this.pauseMenu.style.opacity = '1';
+          this.pauseMenu.style.transform = 'translate(-50%, -50%)';
+        }
+      }, 10);
+    }
+  }
+
+  /**
+   * Hide the pause menu
+   */
+  private hidePauseMenu(): void {
+    if (!this.pauseMenu) {
+      return;
+    }
+
+    // Add exit animation
+    this.pauseMenu.style.opacity = '0';
+    this.pauseMenu.style.transform = 'translate(-50%, -45%)';
+
+    // Remove blur effect
+    if (this.canvas) {
+      this.canvas.style.filter = '';
+    }
+
+    // Store a reference to the menu element
+    const menu = this.pauseMenu;
+    this.pauseMenu = null;
+
+    // Wait for animation to complete before removing
+    setTimeout(() => {
+      if (menu && menu.parentNode) {
+        menu.remove();
+      }
+    }, 300);
+  }
+
+  /**
+   * Restart the current level
+   */
+  private restartLevel(): void {
+    if (this.currentLevel && this.mario) {
+      resetPlayer(this.mario, this.currentLevel.name);
+    }
+  }
+
+  /**
+   * Creates a loading screen
+   * @param name Level name
+   * @returns Scene
+   */
+  private createLoadingScreen(name: string): Scene {
+    const font = this.gameService.font;
+    const scene = new Scene();
+    scene.comp.layers.push(createColorLayer('#000'));
+
+    if (font) {
+      scene.comp.layers.push(createTextLayer(font as any, `Loading ${name}...`));
+    }
+
+    // Create DOM loading indicator
+    const loadingElement = document.createElement('div');
+    loadingElement.className = 'loading';
+    loadingElement.textContent = `Loading ${name}`;
+
+    if (this.gameUI) {
+      this.gameUI.appendChild(loadingElement);
+    } else {
+      document.body.appendChild(loadingElement);
+    }
+
+    // Remove loading element when scene is done
+    scene.events.listen(Scene.EVENT_COMPLETE, () => {
+      loadingElement.remove();
+    });
+
+    return scene;
   }
 
   /**
@@ -569,6 +676,17 @@ export default class Game {
   }
 
   /**
+   * Clean up any loading indicators that might be visible
+   */
+  private clearAllLoadingIndicators(): void {
+    // Remove all elements with the 'loading' class
+    const loadingElements = document.querySelectorAll('.loading');
+    loadingElements.forEach((element) => {
+      element.remove();
+    });
+  }
+
+  /**
    * Starts a world from a level
    * @param name Level name
    * @param loadLevel Level loader function
@@ -611,7 +729,7 @@ export default class Game {
     this._isPaused = true;
     this.timer.stop();
     this.gameService.pause();
-    this.uiManager.showPauseMenu();
+    this.createPauseMenu();
   }
 
   /**
@@ -623,7 +741,7 @@ export default class Game {
     this._isPaused = false;
     this.timer.start();
     this.gameService.resume();
-    this.uiManager.hidePauseMenu();
+    this.hidePauseMenu();
   }
 
   /**
@@ -645,6 +763,13 @@ export default class Game {
    */
   toggleSound(): void {
     this.gameService.toggleSound();
+  }
+
+  /**
+   * Toggle debug mode
+   */
+  toggleDebug(): void {
+    this.debugService.toggle();
   }
 
   /**
@@ -727,63 +852,153 @@ export default class Game {
   }
 
   /**
-   * Create a loading screen
-   * @param name Level name
-   * @returns Scene
+   * Create loading indicator
    */
-  private createLoadingScreen(name: string): Scene {
-    const font = this.gameService.font;
-    const scene = new Scene();
-    scene.comp.layers.push(createColorLayer('#000'));
-
-    if (font) {
-      scene.comp.layers.push(createTextLayer(font as any, `Loading ${name}...`));
-    }
-
-    // Create DOM loading indicator
+  private createLoadingIndicator(): HTMLElement {
     const loadingElement = document.createElement('div');
     loadingElement.className = 'loading';
-    loadingElement.textContent = `Loading ${name}`;
 
-    if (this.uiManager.gameUI) {
-      this.uiManager.gameUI.appendChild(loadingElement);
-    } else {
-      document.body.appendChild(loadingElement);
-    }
+    const loadingText = document.createElement('div');
+    loadingText.textContent = 'Loading...';
+    loadingElement.appendChild(loadingText);
 
-    // Remove loading element when scene is done
-    scene.events.listen(Scene.EVENT_COMPLETE, () => {
-      loadingElement.remove();
-    });
+    const progressContainer = document.createElement('div');
+    progressContainer.className = 'progress-container';
+    loadingElement.appendChild(progressContainer);
 
-    return scene;
+    const progressBar = document.createElement('div');
+    progressBar.className = 'progress-bar';
+    progressBar.style.width = '10%'; // Start with some progress
+    progressContainer.appendChild(progressBar);
+
+    const progressText = document.createElement('div');
+    progressText.className = 'progress-text';
+    progressText.textContent = 'Preparing game...';
+    loadingElement.appendChild(progressText);
+
+    return loadingElement;
   }
 
   /**
-   * Clean up any loading indicators that might be visible
+   * Update loading progress
    */
-  private clearAllLoadingIndicators(): void {
-    // Remove all elements with the 'loading' or 'loading-indicator' class
-    const selectors = ['.loading', '.loading-indicator'];
+  private updateLoadingProgress(
+    loadingElement: HTMLElement,
+    progress: { percentage: number }
+  ): void {
+    if (!loadingElement) return;
 
-    selectors.forEach((selector) => {
-      const elements = document.querySelectorAll(selector);
-      elements.forEach((element) => {
-        // Fade out and remove
-        element.classList.add('fade-out');
-        (element as HTMLElement).style.opacity = '0';
-        (element as HTMLElement).style.transition = 'opacity 0.5s';
+    try {
+      const progressBar = loadingElement.querySelector('.progress-bar');
+      const progressText = loadingElement.querySelector('.progress-text');
 
-        setTimeout(() => {
-          if (element.parentNode) {
-            element.remove();
-          }
-        }, 500);
-      });
-    });
+      if (progressBar instanceof HTMLElement) {
+        progressBar.style.width = `${Math.max(10, progress.percentage)}%`;
+      }
 
-    // Make sure loading element is cleared in UIManager too
-    this.uiManager.loadingElement = null;
+      if (progressText) {
+        if (progress.percentage >= 100) {
+          progressText.textContent = 'Ready!';
+        } else if (progress.percentage > 0) {
+          progressText.textContent = `${progress.percentage}%`;
+        }
+      }
+    } catch (error) {
+      console.warn('Error updating progress:', error);
+    }
+  }
+
+  /**
+   * Cleanup resources
+   */
+  public cleanup(): void {
+    // Stop the game timer
+    this.timer.stop();
+
+    // Clean up input service
+    if (this.inputService) {
+      this.inputService.removeReceiver(this.mario);
+    }
+
+    // Clean up weather effects
+    if (this.weatherService) {
+      this.weatherService.cleanup();
+    }
+
+    // Clean up screen shake
+    if (this.screenShakeService) {
+      this.screenShakeService.cleanup();
+    }
+
+    // Clean up UI elements
+    if (this.gameUI && this.gameUI.parentNode) {
+      this.gameUI.remove();
+    }
+
+    if (this.debugPanel && this.debugPanel.parentNode) {
+      this.debugPanel.remove();
+    }
+
+    if (this.pauseMenu && this.pauseMenu.parentNode) {
+      this.pauseMenu.remove();
+    }
+
+    // Remove settings button if it exists
+    const settingsButton = document.getElementById('settings-button');
+    if (settingsButton && settingsButton.parentNode) {
+      settingsButton.remove();
+    }
+
+    // Remove any settings menu if open
+    const settingsMenu = document.getElementById('settings-menu');
+    if (settingsMenu && settingsMenu.parentNode) {
+      settingsMenu.remove();
+    }
+
+    // Remove achievement notifications container
+    const notificationsContainer = document.querySelector('.achievement-notifications');
+    if (notificationsContainer && notificationsContainer.parentNode) {
+      notificationsContainer.remove();
+    }
+
+    // Clear any interval timers
+    if (this._weatherInterval) {
+      clearInterval(this._weatherInterval);
+      this._weatherInterval = null;
+    }
+
+    // Clear references
+    this.mario = null;
+    this.currentLevel = null;
+
+    // For GC
+    window.mario = null;
+  }
+
+  async loadLevel(name: string) {
+    try {
+      const loaderFactory = this.gameService.entityFactory;
+      if (!loaderFactory) {
+        throw new Error('Entity factory not initialized');
+      }
+
+      const loadLevel = await createLevelLoader(loaderFactory);
+
+      // Start the world with the selected level
+      await this.startWorld(name, loadLevel);
+
+      // Remove loading screen for level
+      this.clearAllLoadingIndicators();
+
+      return this.currentLevel;
+    } catch (error) {
+      console.error('Failed to load level:', error);
+
+      // Remove loading screen even on error
+      this.clearAllLoadingIndicators();
+
+      throw error;
+    }
   }
 
   /**
@@ -1167,96 +1382,5 @@ export default class Game {
 
     // Add menu to the body
     document.body.appendChild(menu);
-  }
-
-  /**
-   * Restart the current level
-   */
-  public restartLevel(): void {
-    if (this.currentLevel && this.mario) {
-      resetPlayer(this.mario, this.currentLevel.name);
-    }
-  }
-
-  /**
-   * Toggle debug mode
-   */
-  toggleDebug(): void {
-    this.debugService.toggle();
-    if (this.debugService.isEnabled()) {
-      this.uiManager.showDebugPanel();
-    } else {
-      this.uiManager.hideDebugPanel();
-    }
-  }
-
-  /**
-   * Cleanup resources
-   */
-  public cleanup(): void {
-    // Stop the game timer
-    this.timer.stop();
-
-    // Clean up input service
-    if (this.inputService) {
-      this.inputService.removeReceiver(this.mario);
-    }
-
-    // Clean up weather effects
-    if (this.weatherService) {
-      this.weatherService.cleanup();
-    }
-
-    // Clean up screen shake
-    if (this.screenShakeService) {
-      this.screenShakeService.cleanup();
-    }
-
-    // Clean up UI elements
-    this.uiManager.cleanup();
-
-    // Clear any interval timers
-    if (this._weatherInterval) {
-      clearInterval(this._weatherInterval);
-      this._weatherInterval = null;
-    }
-
-    // Clear references
-    this.mario = null;
-    this.currentLevel = null;
-
-    // For GC
-    window.mario = null;
-  }
-
-  /**
-   * Load a specific level
-   * @param name Level name to load
-   * @returns The loaded level
-   */
-  async loadLevel(name: string) {
-    try {
-      const loaderFactory = this.gameService.entityFactory;
-      if (!loaderFactory) {
-        throw new Error('Entity factory not initialized');
-      }
-
-      const loadLevel = await createLevelLoader(loaderFactory);
-
-      // Start the world with the selected level
-      await this.startWorld(name, loadLevel);
-
-      // Remove loading screen for level
-      this.clearAllLoadingIndicators();
-
-      return this.currentLevel;
-    } catch (error) {
-      console.error('Failed to load level:', error);
-
-      // Remove loading screen even on error
-      this.clearAllLoadingIndicators();
-
-      throw error;
-    }
   }
 }

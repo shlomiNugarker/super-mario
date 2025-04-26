@@ -1,125 +1,134 @@
 /**
- * Game timer class that manages the game loop and frame rate
+ * Game timer that handles animation frame timing and delta time calculation
+ * Controls the main game loop timing and provides consistent update intervals
  */
 export default class Timer {
-  private accumulatedTime: number = 0;
-  private lastTime: number = 0;
-  private deltaTime: number = 1 / 60;
-  private frameId: number | null = null;
-  private isRunning: boolean = false;
-  private _fps: number = 0;
-  private _frameCount: number = 0;
-  private _fpsUpdateTime: number = 0;
-  private readonly _targetDelta: number;
-  private readonly _maxDeltaTime: number;
+  /** Proxy function that handles the animation frame callback */
+  updateProxy: (time: number) => void;
 
-  // Function to call on each update
-  public update: (deltaTime: number) => void;
+  /** The main update function that will be called with fixed delta time */
+  update!: (deltaTime: number) => void;
+
+  /** Current animation frame ID for cancellation */
+  private animationFrameId: number | null = null;
+
+  /** Whether the timer is currently running */
+  private running: boolean = false;
+
+  /** Frames per second monitoring */
+  private fps: number = 0;
+
+  /** Frame count for FPS calculation */
+  private frameCount: number = 0;
+
+  /** Timestamp for FPS calculation */
+  private fpsTimestamp: number = 0;
+
+  /** Maximum delta time to prevent spiral of death */
+  private maxDeltaTime: number;
 
   /**
    * Constructor
-   * @param deltaTime The fixed time step for the game loop in seconds
-   * @param maxStep Maximum time step (to avoid spiral of death) in seconds
+   * @param deltaTime Fixed delta time for updates (default: 1/60 second)
+   * @param maxDeltaTime Maximum allowed delta time to prevent spiral of death (default: 0.5 seconds)
    */
-  constructor(deltaTime: number = 1 / 60, maxStep: number = 1 / 30) {
-    this.update = () => {}; // Default empty update
-    this._targetDelta = deltaTime;
-    this._maxDeltaTime = maxStep;
+  constructor(deltaTime: number = 1 / 60, maxDeltaTime: number = 0.5) {
+    let accumulatedTime = 0;
+    let lastTime: number | null = null;
+    this.maxDeltaTime = maxDeltaTime;
+
+    this.updateProxy = (time: number) => {
+      if (lastTime) {
+        // Calculate real delta time in seconds
+        const realDeltaTime = (time - lastTime) / 1000;
+
+        // Update FPS counter
+        this.frameCount++;
+        if (time - this.fpsTimestamp >= 1000) {
+          this.fps = (this.frameCount * 1000) / (time - this.fpsTimestamp);
+          this.frameCount = 0;
+          this.fpsTimestamp = time;
+        }
+
+        // Add to accumulated time, but cap it to prevent spiral of death
+        accumulatedTime += Math.min(realDeltaTime, this.maxDeltaTime);
+
+        // Process as many fixed time steps as needed
+        while (accumulatedTime > deltaTime) {
+          this.update(deltaTime);
+          accumulatedTime -= deltaTime;
+        }
+      } else {
+        // Initialize FPS timestamp on first frame
+        this.fpsTimestamp = time;
+      }
+
+      lastTime = time;
+
+      if (this.running) {
+        this.enqueue();
+      }
+    };
   }
 
   /**
-   * Start the game loop
-   */
-  start(): void {
-    if (this.isRunning) {
-      return;
-    }
-
-    this.isRunning = true;
-    this.lastTime = performance.now();
-    this._fpsUpdateTime = this.lastTime;
-    this._frameCount = 0;
-    this.accumulatedTime = 0;
-    this.enqueue();
-  }
-
-  /**
-   * Stop the game loop
-   */
-  stop(): void {
-    if (this.frameId !== null) {
-      cancelAnimationFrame(this.frameId);
-      this.frameId = null;
-    }
-    this.isRunning = false;
-  }
-
-  /**
-   * Enqueue the next frame update
+   * Enqueue the next animation frame
    */
   private enqueue(): void {
-    this.frameId = requestAnimationFrame(this.updateProxy.bind(this));
+    this.animationFrameId = requestAnimationFrame(this.updateProxy);
   }
 
   /**
-   * Update proxy called by requestAnimationFrame
-   * @param currentTime Current time in milliseconds
+   * Start the timer
+   * @returns This timer instance for chaining
    */
-  private updateProxy(currentTime: number): void {
-    if (!this.isRunning) {
-      return;
+  start(): Timer {
+    if (!this.running) {
+      this.running = true;
+      this.enqueue();
     }
-
-    // Calculate time since last frame
-    const elapsedMS = currentTime - this.lastTime;
-    const elapsed = elapsedMS / 1000; // Convert to seconds
-    this.lastTime = currentTime;
-
-    // FPS calculation
-    this._frameCount++;
-    const fpsElapsed = currentTime - this._fpsUpdateTime;
-    if (fpsElapsed >= 1000) {
-      // Update FPS every second
-      this._fps = (this._frameCount * 1000) / fpsElapsed;
-      this._frameCount = 0;
-      this._fpsUpdateTime = currentTime;
-    }
-
-    // Add elapsed time to accumulated time, but clamp it to avoid spiral of death
-    this.accumulatedTime += Math.min(elapsed, this._maxDeltaTime);
-
-    // Fixed time step updating
-    // Process as many updates as needed to catch up
-    let updated = false;
-    while (this.accumulatedTime >= this._targetDelta) {
-      this.deltaTime = this._targetDelta;
-      this.update(this.deltaTime);
-      this.accumulatedTime -= this._targetDelta;
-      updated = true;
-    }
-
-    // If no updates happened (e.g., on very slow computers), force an update
-    // with the actual elapsed time to ensure visuals keep moving
-    if (!updated && elapsed > 0) {
-      this.deltaTime = elapsed;
-      this.update(this.deltaTime);
-    }
-
-    // Queue the next frame
-    this.enqueue();
+    return this;
   }
 
   /**
-   * Get the current FPS
+   * Stop the timer
+   * @returns This timer instance for chaining
    */
-  get fps(): number {
-    return this._fps;
+  stop(): Timer {
+    if (this.running && this.animationFrameId !== null) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.running = false;
+      this.animationFrameId = null;
+    }
+    return this;
   }
 
   /**
-   * Check if timer is running
+   * Toggle the timer on/off
+   * @returns This timer instance for chaining
    */
-  get running(): boolean {
-    return this.isRunning;
+  toggle(): Timer {
+    if (this.running) {
+      this.stop();
+    } else {
+      this.start();
+    }
+    return this;
+  }
+
+  /**
+   * Get the current frames per second
+   * @returns The current FPS value
+   */
+  getFPS(): number {
+    return Math.round(this.fps);
+  }
+
+  /**
+   * Check if the timer is currently running
+   * @returns True if the timer is running
+   */
+  isRunning(): boolean {
+    return this.running;
   }
 }

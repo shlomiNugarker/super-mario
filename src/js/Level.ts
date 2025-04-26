@@ -8,7 +8,7 @@ import { findPlayers } from './player.ts';
 import Entity from './Entity.ts';
 import { LevelEvents } from '../types/level';
 import { GameContext } from '../types/common';
-import { GRAVITY, DEBUG_COLLISIONS } from './config.ts';
+import { GRAVITY } from './config.ts';
 
 /**
  * Minimal AudioPlayer interface for MusicController
@@ -53,37 +53,6 @@ class EntityCollection extends Set<Entity> {
     }
     return undefined;
   }
-
-  /**
-   * Get entities within the viewport with optional margin
-   * @param camera Camera defining the viewport
-   * @param margin Extra margin around viewport to include
-   * @returns Set of entities in the viewport
-   */
-  getInViewport(camera: Camera, margin: number = 100): Set<Entity> {
-    const result = new Set<Entity>();
-
-    // Calculate viewport bounds with margin
-    const left = camera.pos.x - margin;
-    const right = camera.pos.x + camera.size.x + margin;
-    const top = camera.pos.y - margin;
-    const bottom = camera.pos.y + camera.size.y + margin;
-
-    // Find entities in viewport
-    for (const entity of this) {
-      // Simple AABB check
-      if (
-        entity.bounds.right >= left &&
-        entity.bounds.left <= right &&
-        entity.bounds.bottom >= top &&
-        entity.bounds.top <= bottom
-      ) {
-        result.add(entity);
-      }
-    }
-
-    return result;
-  }
 }
 
 /**
@@ -102,8 +71,6 @@ export default class Level extends Scene {
   public entities: EntityCollection;
   public entityCollider: EntityCollider;
   public tileCollider: TileCollider;
-  private lastUpdateTime: number = 0;
-  private spatialUpdateFrequency: number = 0.1; // Update spatial grid every 100ms
 
   constructor() {
     super();
@@ -117,9 +84,6 @@ export default class Level extends Scene {
     this.entities = new EntityCollection();
     this.entityCollider = new EntityCollider(this.entities as unknown as Entity[]);
     this.tileCollider = new TileCollider();
-
-    // Enable debug mode for tile collider if debug collisions are enabled
-    this.tileCollider.setDebug(DEBUG_COLLISIONS);
   }
 
   /**
@@ -137,39 +101,20 @@ export default class Level extends Scene {
    * @param gameContext Game context
    */
   override update(gameContext: GameContext): void {
-    // Update only entities in viewport for better performance
-    const activeEntities = this.entities.getInViewport(this.camera);
-
-    // Update spatial grid when needed
-    if (this.totalTime - this.lastUpdateTime > this.spatialUpdateFrequency) {
-      this.tileCollider.updateSpatialGrid(activeEntities);
-      this.lastUpdateTime = this.totalTime;
-    }
-
-    // Update active entities
-    for (const entity of activeEntities) {
+    this.entities.forEach((entity) => {
       entity.update(gameContext, this);
-    }
+    });
 
-    // Check collisions using optimized collision detection
-    for (const entity of activeEntities) {
-      // Use spatial grid to find potential colliders
-      const potentialColliders = this.tileCollider.getPotentialColliders(entity);
+    this.entities.forEach((entity) => {
+      this.entityCollider.check(entity);
+    });
 
-      // Check only against potential colliders
-      for (const collider of potentialColliders) {
-        if (collider.bounds.overlaps(entity.bounds)) {
-          entity.collides(collider);
-        }
-      }
-    }
-
-    // Finalize all entities
-    for (const entity of this.entities) {
+    this.entities.forEach((entity) => {
       entity.finalize();
-    }
+    });
 
     focusPlayer(this);
+
     this.totalTime += gameContext.deltaTime;
   }
 
@@ -178,21 +123,5 @@ export default class Level extends Scene {
    */
   override pause(): void {
     this.music.pause();
-  }
-
-  /**
-   * Add entity to level
-   * @param entity Entity to add
-   */
-  addEntity(entity: Entity): void {
-    this.entities.add(entity);
-  }
-
-  /**
-   * Remove entity from level
-   * @param entity Entity to remove
-   */
-  removeEntity(entity: Entity): void {
-    this.entities.delete(entity);
   }
 }
