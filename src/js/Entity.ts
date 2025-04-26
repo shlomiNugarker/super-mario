@@ -115,10 +115,19 @@ export default class Entity implements ITraitEntity {
   }
 
   /**
+   * Gets a trait by checking for characteristic properties
+   * @param predicate Function to test if a trait has specific characteristics
+   * @returns The first matching trait or undefined
+   */
+  getTraitByProperties<T extends Trait>(predicate: (trait: Trait) => trait is T): T | undefined {
+    return Array.from(this.traits.values()).find(predicate);
+  }
+
+  /**
    * Gets Go trait
    */
   getGoTrait(): GoTrait | undefined {
-    return Array.from(this.traits.values()).find(
+    return this.getTraitByProperties(
       (trait): trait is GoTrait => 'acceleration' in trait && 'dragFactor' in trait
     );
   }
@@ -127,7 +136,7 @@ export default class Entity implements ITraitEntity {
    * Gets Jump trait
    */
   getJumpTrait(): JumpTrait | undefined {
-    return Array.from(this.traits.values()).find(
+    return this.getTraitByProperties(
       (trait): trait is JumpTrait => 'velocity' in trait && 'falling' in trait && 'start' in trait
     );
   }
@@ -136,7 +145,7 @@ export default class Entity implements ITraitEntity {
    * Gets Killable trait
    */
   getKillableTrait(): KillableTrait | undefined {
-    return Array.from(this.traits.values()).find(
+    return this.getTraitByProperties(
       (trait): trait is KillableTrait => 'dead' in trait && 'kill' in trait
     );
   }
@@ -145,7 +154,7 @@ export default class Entity implements ITraitEntity {
    * Gets Physics trait
    */
   getPhysicsTrait(): PhysicsTrait | undefined {
-    return Array.from(this.traits.values()).find(
+    return this.getTraitByProperties(
       (trait): trait is PhysicsTrait => 'enabled' in trait && trait.constructor.name === 'Physics'
     );
   }
@@ -154,7 +163,7 @@ export default class Entity implements ITraitEntity {
    * Gets Solid trait
    */
   getSolidTrait(): SolidTrait | undefined {
-    return Array.from(this.traits.values()).find(
+    return this.getTraitByProperties(
       (trait): trait is SolidTrait => 'enabled' in trait && trait.constructor.name === 'Solid'
     );
   }
@@ -163,7 +172,7 @@ export default class Entity implements ITraitEntity {
    * Gets PipeTraveller trait
    */
   getPipeTravellerTrait(): PipeTravellerTrait | undefined {
-    return Array.from(this.traits.values()).find(
+    return this.getTraitByProperties(
       (trait): trait is PipeTravellerTrait => 'movement' in trait && 'distance' in trait
     );
   }
@@ -172,7 +181,7 @@ export default class Entity implements ITraitEntity {
    * Gets PoleTraveller trait
    */
   getPoleTravellerTrait(): PoleTravellerTrait | undefined {
-    return Array.from(this.traits.values()).find(
+    return this.getTraitByProperties(
       (trait): trait is PoleTravellerTrait =>
         'distance' in trait && trait.constructor.name === 'PoleTraveller'
     );
@@ -182,16 +191,14 @@ export default class Entity implements ITraitEntity {
    * Gets Stomper trait
    */
   getStomperTrait(): StomperTrait | undefined {
-    return Array.from(this.traits.values()).find(
-      (trait): trait is StomperTrait => 'bounceSpeed' in trait
-    );
+    return this.getTraitByProperties((trait): trait is StomperTrait => 'bounceSpeed' in trait);
   }
 
   /**
    * Gets PendulumMove trait
    */
   getPendulumMoveTrait(): PendulumMoveTrait | undefined {
-    return Array.from(this.traits.values()).find(
+    return this.getTraitByProperties(
       (trait): trait is PendulumMoveTrait =>
         'speed' in trait && trait.constructor.name === 'PendulumMove'
     );

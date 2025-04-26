@@ -37,13 +37,11 @@ export default class Jump extends Trait {
 
   start(): void {
     this.requestTime = this.gracePeriod;
-    console.log('Jump.start() called, requestTime:', this.requestTime);
   }
 
   cancel(): void {
     this.engageTime = 0;
     this.requestTime = 0;
-    console.log('Jump.cancel() called');
   }
 
   obstruct(_entity: EntityWithSounds, side: symbol): void {
@@ -59,10 +57,7 @@ export default class Jump extends Trait {
     const { deltaTime } = gameContext;
 
     if (this.requestTime > 0) {
-      console.log('Jump update: ready =', this.ready, 'requestTime =', this.requestTime.toFixed(3));
-
       if (this.ready > 0) {
-        console.log('Starting jump!');
         entity.sounds.add('jump');
         this.engageTime = this.duration;
         this.requestTime = 0;
@@ -73,12 +68,6 @@ export default class Jump extends Trait {
 
     if (this.engageTime > 0) {
       entity.vel.y = -(this.velocity + Math.abs(entity.vel.x) * this.speedBoost);
-      console.log(
-        'Jump engaged: vel.y =',
-        entity.vel.y.toFixed(2),
-        'engageTime =',
-        this.engageTime.toFixed(3)
-      );
       this.engageTime -= deltaTime;
     }
 

@@ -1,39 +1,61 @@
 import Player from './traits/Player.ts';
 import LevelTimer from './traits/LevelTimer.ts';
 import Entity from './Entity.ts';
+import Level from './Level.ts';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function makePlayer(entity: Entity, _name: string): void {
+/**
+ * Adds player-related traits to an entity
+ * @param entity The entity to make into a player
+ * @param name The player's name
+ */
+export function makePlayer(entity: Entity, name: string): void {
   const player = new Player();
-  player.name = 'MARIO';
+  player.name = name;
   entity.addTrait(player);
 
   const timer = new LevelTimer();
   entity.addTrait(timer);
 }
 
+/**
+ * Resets a player entity for a new world
+ * @param entity The player entity to reset
+ * @param worldName The name of the world
+ */
 export function resetPlayer(entity: Entity, worldName: string): void {
-  const timer = entity.traits.get(LevelTimer);
+  const timer = entity.getTrait(LevelTimer);
   if (timer) {
-    (timer as LevelTimer).reset();
+    timer.reset();
   }
 
-  const player = entity.traits.get(Player);
+  const player = entity.getTrait(Player);
   if (player) {
-    (player as Player).world = worldName;
+    player.world = worldName;
   }
 }
 
-export function bootstrapPlayer(entity: Entity, level: any): void {
-  const timer = entity.traits.get(LevelTimer);
+/**
+ * Places a player entity at the level checkpoint and adds it to the level
+ * @param entity The player entity
+ * @param level The game level
+ */
+export function bootstrapPlayer(entity: Entity, level: Level): void {
+  const timer = entity.getTrait(LevelTimer);
   if (timer) {
-    (timer as LevelTimer).hurryEmitted = null;
+    timer.hurryEmitted = null;
   }
 
-  entity.pos.copy(level.checkpoints[0]);
-  level.entities.add(entity);
+  if (level.checkpoints && level.checkpoints.length > 0) {
+    entity.pos.copy(level.checkpoints[0]);
+    level.entities.add(entity);
+  }
 }
 
+/**
+ * Finds all entities that have the Player trait
+ * @param entities Iterable of entities to search through
+ * @returns Generator yielding player entities
+ */
 export function* findPlayers(entities: Iterable<Entity>): Generator<Entity> {
   for (const entity of entities) {
     if (entity.traits.has(Player)) {

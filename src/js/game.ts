@@ -15,7 +15,7 @@ import TimedScene from './TimedScene.ts';
 import { LevelEvents } from '../types/level';
 import { CANVAS_WIDTH, CANVAS_HEIGHT, DEBUG_COLLISIONS, PLAYER_JUMP_VELOCITY } from './config.ts';
 import Pipe from './traits/Pipe.ts';
-import { connectEntity } from './traits/Pipe.js';
+import { connectEntity } from './traits/Pipe.ts';
 import GameService from './services/GameService.ts';
 import InputService from './services/InputService.ts';
 import DebugService from './services/DebugService.ts';

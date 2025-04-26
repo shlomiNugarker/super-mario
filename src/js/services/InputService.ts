@@ -127,16 +127,32 @@ export default class InputService {
       this.keysPressed.delete(code);
     }
 
-    // Handle directional keys (WASD and Arrows)
-    if (code === 'KeyA' || code === 'ArrowLeft') {
-      this.triggerDirectionalInput('left', isDown);
-    } else if (code === 'KeyD' || code === 'ArrowRight') {
-      this.triggerDirectionalInput('right', isDown);
-    } else if (code === 'KeyW' || code === 'ArrowUp' || code === 'Space') {
-      this.triggerActionInput('jump', isDown);
-    } else if (code === 'KeyS' || code === 'ArrowDown' || code === 'ShiftLeft') {
-      this.triggerActionInput('turbo', isDown);
-    } else if (code === 'Escape') {
+    // Define key mappings for direction and actions
+    const keyMappings: Record<string, { type: 'direction' | 'action'; name: string }> = {
+      KeyA: { type: 'direction', name: 'left' },
+      ArrowLeft: { type: 'direction', name: 'left' },
+      KeyD: { type: 'direction', name: 'right' },
+      ArrowRight: { type: 'direction', name: 'right' },
+      KeyW: { type: 'direction', name: 'up' },
+      ArrowUp: { type: 'action', name: 'jump' },
+      Space: { type: 'action', name: 'jump' },
+      KeyS: { type: 'direction', name: 'down' },
+      ArrowDown: { type: 'action', name: 'turbo' },
+      ShiftLeft: { type: 'action', name: 'turbo' },
+    };
+
+    // Handle mapped keys
+    const mapping = keyMappings[code];
+    if (mapping) {
+      if (mapping.type === 'direction') {
+        this.triggerDirectionalInput(mapping.name, isDown);
+      } else {
+        this.triggerActionInput(mapping.name, isDown);
+      }
+    }
+
+    // Special case for Escape key
+    else if (code === 'Escape') {
       // Only trigger pause on key down to avoid toggling rapidly
       if (isDown && this.pauseHandler) {
         this.pauseHandler();
@@ -546,43 +562,39 @@ export default class InputService {
   }
 
   /**
-   * Trigger a directional input from touch controls
-   * @param direction Direction (up, down, left, right)
-   * @param pressed Whether the button is pressed or released
+   * Trigger a directional input event
+   * @param direction Direction name ('left', 'right', 'up', 'down')
+   * @param pressed Whether button is pressed
    */
   public triggerDirectionalInput(direction: string, pressed: boolean): void {
-    const keyState: KeyState = pressed ? PRESSED : RELEASED;
+    const keyState = pressed ? PRESSED : RELEASED;
+    let directionValue = 0;
 
+    // Map direction name to numeric value
     switch (direction) {
       case 'left':
-        this.inputRouter.route((receiver) => {
-          if (receiver.receive) {
-            receiver.receive(new GameInputEvent('move', { direction: -1, keyState }));
-          }
-        });
+        directionValue = -1;
         break;
       case 'right':
-        this.inputRouter.route((receiver) => {
-          if (receiver.receive) {
-            receiver.receive(new GameInputEvent('move', { direction: 1, keyState }));
-          }
-        });
+        directionValue = 1;
         break;
       case 'up':
-        this.inputRouter.route((receiver) => {
-          if (receiver.receive) {
-            receiver.receive(new GameInputEvent('jump', keyState));
-          }
-        });
+        directionValue = -1;
         break;
       case 'down':
-        this.inputRouter.route((receiver) => {
-          if (receiver.receive) {
-            receiver.receive(new GameInputEvent('turbo', keyState));
-          }
-        });
+        directionValue = 1;
         break;
     }
+
+    // Create events based on direction
+    const actionType = direction === 'left' || direction === 'right' ? 'move' : 'climb';
+
+    // Route the event to all receivers
+    this.inputRouter.route((receiver) => {
+      if (receiver.receive) {
+        receiver.receive(new GameInputEvent(actionType, { direction: directionValue, keyState }));
+      }
+    });
   }
 
   /**
