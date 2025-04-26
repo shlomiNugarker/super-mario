@@ -16,7 +16,7 @@ export default class LoadingScene extends Scene {
   private fadeInAlpha: number = 0;
   private showShinyEffect: boolean = true;
   private levelName: string;
-  private lastUpdate: number = 0;
+  lastUpdate: number = 0;
   private cloudPositions: { x: number; y: number; speed: number; size: number }[] = [];
   private bouncingMario: { y: number; velocity: number; x: number } = { y: 0, velocity: -2, x: 0 };
 

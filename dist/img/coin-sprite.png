@@ -1,0 +1,4 @@
+// This is a placeholder file for the coin-sprite.png
+// In a real implementation, this would be a properly formatted PNG file
+// with 8 frames of a coin spinning animation
+// The PNG would be 192px wide (8 frames at 24px each) and 24px tall 
