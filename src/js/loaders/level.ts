@@ -172,7 +172,7 @@ export function createLevelLoader(entityFactory: any) {
 
         const spriteLayer = createSpriteLayer(level.entities);
         // @ts-expect-error - We know this is accessing protected/private properties
-        level.comp.layers.splice(level.comp.layers.length - 1, 0, spriteLayer);
+        level.comp.layers.push(spriteLayer);
 
         return level;
       });

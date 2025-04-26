@@ -1,5 +1,19 @@
+/* Mario Theme - Enhanced UI Design */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+  --mario-red: #e52521;
+  --mario-blue: #4a7aff;
+  --mario-yellow: #fbd000;
+  --mario-green: #43b047;
+  --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  --menu-bg: rgba(0, 0, 42, 0.85);
+  --menu-border: rgba(255, 255, 255, 0.3);
+  --button-hover: #e52521;
+}
+
 body {
-  background: #000;
+  background: var(--bg-gradient);
   margin: 0;
   padding: 0;
   display: flex;
@@ -9,14 +23,18 @@ body {
   overflow: hidden;
   touch-action: none;
   position: relative;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Press Start 2P', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: white;
 }
 
 #screen {
   display: block;
   image-rendering: pixelated;
-  box-shadow: 0 0 30px rgba(0, 0, 255, 0.3);
+  box-shadow: 0 0 30px rgba(29, 53, 87, 0.6);
+  border: 4px solid #333;
+  border-radius: 4px;
   z-index: 1;
+  margin-top: 20px;
 }
 
 /* NES original aspect ratio (256x240) */
@@ -69,7 +87,7 @@ body {
 }
 
 .touch-btn {
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.15);
   border: 2px solid rgba(255, 255, 255, 0.7);
   border-radius: 50%;
   width: 45px;
@@ -85,27 +103,31 @@ body {
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   pointer-events: auto;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
 }
 
 .touch-btn:active {
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: scale(0.95);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .touch-jump {
-  background-color: rgba(255, 0, 0, 0.3);
-  border-color: rgba(255, 0, 0, 0.7);
+  background-color: rgba(229, 37, 33, 0.7);
+  border-color: rgba(255, 255, 255, 0.9);
   width: 60px;
   height: 60px;
 }
 
 .touch-run {
-  background-color: rgba(0, 0, 255, 0.3);
-  border-color: rgba(0, 0, 255, 0.7);
+  background-color: rgba(74, 122, 255, 0.7);
+  border-color: rgba(255, 255, 255, 0.9);
 }
 
 .touch-pause {
-  background-color: rgba(0, 0, 0, 0.5);
-  border-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(0, 0, 0, 0.7);
+  border-color: rgba(255, 255, 255, 0.7);
   font-size: 20px;
   margin-top: 20px;
 }
@@ -135,35 +157,53 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  border: 2px solid white;
+  background-color: var(--menu-bg);
+  border: 3px solid var(--menu-border);
   border-radius: 10px;
-  padding: 20px;
+  padding: 20px 30px;
   color: white;
   text-align: center;
   z-index: 4;
-  min-width: 200px;
+  min-width: 280px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
 }
 
 .menu-title {
   font-size: 24px;
   margin-bottom: 20px;
+  color: var(--mario-yellow);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .menu-button {
-  background-color: #333;
+  background-color: var(--mario-red);
   color: white;
-  border: 1px solid #666;
+  border: none;
   border-radius: 5px;
-  padding: 10px 20px;
-  margin: 5px;
+  padding: 12px 25px;
+  margin: 10px 5px;
   cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.2s;
+  font-family: 'Press Start 2P', sans-serif;
+  font-size: 14px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 0 #a51c1c;
+  position: relative;
+  top: 0;
+  letter-spacing: 1px;
 }
 
 .menu-button:hover {
-  background-color: #555;
+  background-color: #f03c3c;
+  box-shadow: 0 3px 0 #a51c1c;
+  top: 1px;
+  transform: translateY(1px);
+}
+
+.menu-button:active {
+  top: 4px;
+  box-shadow: none;
+  transform: translateY(4px);
 }
 
 /* Media query for mobile devices */
@@ -175,6 +215,12 @@ body {
   .nes-aspect {
     max-width: 95vmin;
     max-height: calc(95vmin * 240 / 256);
+  }
+
+  .menu {
+    width: 90%;
+    max-width: 350px;
+    padding: 15px;
   }
 }
 
@@ -208,36 +254,62 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
-  font-size: 24px;
+  font-size: 16px;
   text-align: center;
   z-index: 5;
-  background-color: rgba(0, 0, 0, 0.7);
-  padding: 20px;
+  background-color: var(--menu-bg);
+  padding: 25px;
   border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0, 0, 255, 0.5);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
   width: 300px;
+  border: 3px solid var(--menu-border);
+  backdrop-filter: blur(8px);
 }
 
 .progress-container {
   width: 100%;
   height: 20px;
-  background-color: #333;
+  background-color: #222;
   border-radius: 10px;
   margin: 15px 0;
   overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(to right, #3498db, #2ecc71);
+  background: linear-gradient(to right, var(--mario-red), var(--mario-yellow));
   width: 0%;
   transition: width 0.3s ease;
-  border-radius: 10px;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: progress-shine 1.5s infinite;
+}
+
+@keyframes progress-shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .progress-text {
-  font-size: 18px;
-  margin-top: 5px;
+  font-size: 14px;
+  margin-top: 10px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
 }
 
 .error-message {
@@ -245,31 +317,48 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(255, 0, 0, 0.8);
+  background-color: rgba(220, 20, 20, 0.9);
   color: white;
   padding: 20px;
   border-radius: 10px;
   text-align: center;
+  z-index: 10;
   max-width: 80%;
-  font-size: 18px;
-  z-index: 100;
-  transition: opacity 1s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  font-family: 'Press Start 2P', sans-serif;
+  font-size: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .error-message.fade-out {
   opacity: 0;
+  transition: opacity 1s;
 }
 
 .loading::after {
   content: '';
   display: inline-block;
-  width: 24px;
-  height: 24px;
-  margin-left: 10px;
-  border: 4px solid rgba(255, 255, 255, 0.3);
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   border-top-color: white;
-  animation: spin 1s linear infinite;
+  animation: spin 1s ease-in-out infinite;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+.loading-title {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: var(--mario-yellow);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.loading-subtitle {
+  font-size: 12px;
+  margin-bottom: 20px;
+  opacity: 0.8;
 }
 
 @keyframes spin {
@@ -278,23 +367,68 @@ body {
   }
 }
 
-/* Debug panel */
+/* Pixel animation for coin */
+@keyframes coin-spin {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -192px 0;
+  }
+}
+
+.pixel-coin {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  background-image: url('/img/coin-sprite.png');
+  background-repeat: repeat-x;
+  animation: coin-spin 0.5s steps(8) infinite;
+  vertical-align: middle;
+  margin: 0 5px;
+}
+
 #debug-panel {
   position: absolute;
   top: 10px;
   right: 10px;
   background-color: rgba(0, 0, 0, 0.7);
-  color: lime;
-  font-family: monospace;
+  color: white;
   padding: 10px;
   border-radius: 5px;
+  font-family: monospace;
   font-size: 12px;
-  z-index: 6;
-  pointer-events: auto;
-  max-width: 300px;
+  z-index: 3;
   display: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(4px);
 }
 
 .debug-active #debug-panel {
   display: block;
+}
+
+/* Game notification system */
+.game-notification {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  z-index: 5;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  max-width: 80%;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.game-notification.visible {
+  opacity: 1;
 }

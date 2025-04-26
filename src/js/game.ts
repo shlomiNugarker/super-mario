@@ -302,98 +302,237 @@ export default class Game {
   }
 
   /**
-   * Create the pause menu
+   * Create a pause menu
    */
   private createPauseMenu(): void {
+    // Check if menu already exists
     if (this.pauseMenu) {
-      // Menu already exists, just show it
-      this.pauseMenu.style.display = 'block';
       return;
     }
 
-    // Create pause menu
+    // Create menu container
     this.pauseMenu = document.createElement('div');
     this.pauseMenu.className = 'menu';
 
-    // Title
-    const title = document.createElement('div');
-    title.className = 'menu-title';
-    title.textContent = 'Paused';
-    this.pauseMenu.appendChild(title);
+    // Add blur effect
+    this.canvas.style.transition = 'filter 0.3s ease';
+    this.canvas.style.filter = 'blur(5px) brightness(0.7)';
+
+    // Create header
+    const header = document.createElement('div');
+    header.style.marginBottom = '25px';
+
+    const title = document.createElement('h2');
+    title.textContent = 'GAME PAUSED';
+    title.style.color = 'var(--mario-yellow)';
+    title.style.fontFamily = "'Press Start 2P', sans-serif";
+    title.style.textAlign = 'center';
+    title.style.fontSize = '18px';
+    title.style.marginBottom = '10px';
+    title.style.textShadow = '2px 2px 0 rgba(0, 0, 0, 0.5)';
+    header.appendChild(title);
+
+    this.pauseMenu.appendChild(header);
+
+    // Create buttons container
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.style.display = 'flex';
+    buttonsContainer.style.flexDirection = 'column';
+    buttonsContainer.style.gap = '10px';
+    buttonsContainer.style.marginBottom = '20px';
 
     // Resume button
     const resumeButton = document.createElement('button');
     resumeButton.className = 'menu-button';
-    resumeButton.textContent = 'Resume';
+    resumeButton.innerHTML = '<span style="margin-right: 10px">▶</span> Resume Game';
     resumeButton.addEventListener('click', () => this.resume());
-    this.pauseMenu.appendChild(resumeButton);
+    buttonsContainer.appendChild(resumeButton);
 
     // Restart button
     const restartButton = document.createElement('button');
     restartButton.className = 'menu-button';
-    restartButton.textContent = 'Restart Level';
-    restartButton.addEventListener('click', () => {
-      this.restartLevel();
-      this.resume();
-    });
-    this.pauseMenu.appendChild(restartButton);
+    restartButton.style.backgroundColor = 'var(--mario-blue)';
+    restartButton.style.boxShadow = '0 4px 0 #2a5adf';
+    restartButton.innerHTML = '<span style="margin-right: 10px">↻</span> Restart Level';
+    restartButton.addEventListener('click', () => this.restartLevel());
+    buttonsContainer.appendChild(restartButton);
 
     // Save button
     const saveButton = document.createElement('button');
     saveButton.className = 'menu-button';
-    saveButton.textContent = 'Save Game';
+    saveButton.style.backgroundColor = 'var(--mario-green)';
+    saveButton.style.boxShadow = '0 4px 0 #2e8534';
+    saveButton.innerHTML = '<span style="margin-right: 10px">💾</span> Save Game';
     saveButton.addEventListener('click', () => {
       this.saveGame();
-      // Keep the menu open
-    });
-    this.pauseMenu.appendChild(saveButton);
 
-    // Load button - only enabled if save exists
-    const loadButton = document.createElement('button');
-    loadButton.className = 'menu-button';
-    loadButton.textContent = 'Load Game';
-    loadButton.disabled = !this.hasSave();
-    loadButton.addEventListener('click', () => {
-      this.loadSavedGame();
-      this.resume();
-    });
-    this.pauseMenu.appendChild(loadButton);
+      // Show save confirmation
+      const saveConfirm = document.createElement('div');
+      saveConfirm.textContent = 'Game Saved!';
+      saveConfirm.className = 'game-notification';
+      document.body.appendChild(saveConfirm);
 
-    // Sound toggle
-    const soundButton = document.createElement('button');
-    soundButton.className = 'menu-button';
-    soundButton.textContent = this.gameService.isSoundEnabled() ? 'Sound: ON' : 'Sound: OFF';
-    soundButton.addEventListener('click', () => {
-      this.toggleSound();
-      soundButton.textContent = this.gameService.isSoundEnabled() ? 'Sound: ON' : 'Sound: OFF';
+      // Animate notification
+      setTimeout(() => {
+        saveConfirm.classList.add('visible');
+
+        setTimeout(() => {
+          saveConfirm.classList.remove('visible');
+          setTimeout(() => saveConfirm.remove(), 300);
+        }, 2000);
+      }, 10);
     });
-    this.pauseMenu.appendChild(soundButton);
+    buttonsContainer.appendChild(saveButton);
+
+    this.pauseMenu.appendChild(buttonsContainer);
+
+    // Settings section
+    const settingsContainer = document.createElement('div');
+    settingsContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+    settingsContainer.style.padding = '15px';
+    settingsContainer.style.borderRadius = '8px';
+    settingsContainer.style.marginBottom = '20px';
+
+    const settingsTitle = document.createElement('div');
+    settingsTitle.textContent = 'SETTINGS';
+    settingsTitle.style.color = 'var(--mario-yellow)';
+    settingsTitle.style.fontFamily = "'Press Start 2P', sans-serif";
+    settingsTitle.style.textAlign = 'center';
+    settingsTitle.style.fontSize = '12px';
+    settingsTitle.style.marginBottom = '10px';
+    settingsContainer.appendChild(settingsTitle);
+
+    // Toggle buttons container
+    const togglesContainer = document.createElement('div');
+    togglesContainer.style.display = 'grid';
+    togglesContainer.style.gridTemplateColumns = '1fr auto';
+    togglesContainer.style.gap = '10px';
+    togglesContainer.style.alignItems = 'center';
 
     // Music toggle
-    const musicButton = document.createElement('button');
-    musicButton.className = 'menu-button';
-    musicButton.textContent = this.gameService.isMusicEnabled() ? 'Music: ON' : 'Music: OFF';
-    musicButton.addEventListener('click', () => {
+    const musicLabel = document.createElement('div');
+    musicLabel.textContent = 'Music';
+    musicLabel.style.color = 'white';
+    musicLabel.style.fontSize = '12px';
+    togglesContainer.appendChild(musicLabel);
+
+    const musicToggle = document.createElement('button');
+    musicToggle.className = 'menu-button';
+    musicToggle.style.padding = '8px 15px';
+    musicToggle.style.fontSize = '10px';
+    musicToggle.style.margin = '0';
+    musicToggle.textContent = this.gameService.isMusicEnabled() ? 'ON' : 'OFF';
+    musicToggle.style.backgroundColor = this.gameService.isMusicEnabled()
+      ? 'var(--mario-green)'
+      : '#777';
+    musicToggle.style.boxShadow = this.gameService.isMusicEnabled()
+      ? '0 3px 0 #2e8534'
+      : '0 3px 0 #555';
+
+    musicToggle.addEventListener('click', () => {
       this.toggleMusic();
-      musicButton.textContent = this.gameService.isMusicEnabled() ? 'Music: ON' : 'Music: OFF';
+      musicToggle.textContent = this.gameService.isMusicEnabled() ? 'ON' : 'OFF';
+      musicToggle.style.backgroundColor = this.gameService.isMusicEnabled()
+        ? 'var(--mario-green)'
+        : '#777';
+      musicToggle.style.boxShadow = this.gameService.isMusicEnabled()
+        ? '0 3px 0 #2e8534'
+        : '0 3px 0 #555';
     });
-    this.pauseMenu.appendChild(musicButton);
+
+    togglesContainer.appendChild(musicToggle);
+
+    // Sound toggle
+    const soundLabel = document.createElement('div');
+    soundLabel.textContent = 'Sound FX';
+    soundLabel.style.color = 'white';
+    soundLabel.style.fontSize = '12px';
+    togglesContainer.appendChild(soundLabel);
+
+    const soundToggle = document.createElement('button');
+    soundToggle.className = 'menu-button';
+    soundToggle.style.padding = '8px 15px';
+    soundToggle.style.fontSize = '10px';
+    soundToggle.style.margin = '0';
+    soundToggle.textContent = this.gameService.isSoundEnabled() ? 'ON' : 'OFF';
+    soundToggle.style.backgroundColor = this.gameService.isSoundEnabled()
+      ? 'var(--mario-green)'
+      : '#777';
+    soundToggle.style.boxShadow = this.gameService.isSoundEnabled()
+      ? '0 3px 0 #2e8534'
+      : '0 3px 0 #555';
+
+    soundToggle.addEventListener('click', () => {
+      this.toggleSound();
+      soundToggle.textContent = this.gameService.isSoundEnabled() ? 'ON' : 'OFF';
+      soundToggle.style.backgroundColor = this.gameService.isSoundEnabled()
+        ? 'var(--mario-green)'
+        : '#777';
+      soundToggle.style.boxShadow = this.gameService.isSoundEnabled()
+        ? '0 3px 0 #2e8534'
+        : '0 3px 0 #555';
+    });
+
+    togglesContainer.appendChild(soundToggle);
 
     // Debug toggle
-    const debugButton = document.createElement('button');
-    debugButton.className = 'menu-button';
-    debugButton.textContent = this.debugService.isEnabled() ? 'Debug: ON' : 'Debug: OFF';
-    debugButton.addEventListener('click', () => {
-      this.toggleDebug();
-      debugButton.textContent = this.debugService.isEnabled() ? 'Debug: ON' : 'Debug: OFF';
-    });
-    this.pauseMenu.appendChild(debugButton);
+    const debugLabel = document.createElement('div');
+    debugLabel.textContent = 'Debug Mode';
+    debugLabel.style.color = 'white';
+    debugLabel.style.fontSize = '12px';
+    togglesContainer.appendChild(debugLabel);
 
-    // Append to UI
-    if (this.gameUI) {
-      this.gameUI.appendChild(this.pauseMenu);
-    } else {
-      document.body.appendChild(this.pauseMenu);
+    const debugToggle = document.createElement('button');
+    debugToggle.className = 'menu-button';
+    debugToggle.style.padding = '8px 15px';
+    debugToggle.style.fontSize = '10px';
+    debugToggle.style.margin = '0';
+    debugToggle.textContent = this.debugService.isEnabled() ? 'ON' : 'OFF';
+    debugToggle.style.backgroundColor = this.debugService.isEnabled()
+      ? 'var(--mario-green)'
+      : '#777';
+    debugToggle.style.boxShadow = this.debugService.isEnabled()
+      ? '0 3px 0 #2e8534'
+      : '0 3px 0 #555';
+
+    debugToggle.addEventListener('click', () => {
+      this.toggleDebug();
+      debugToggle.textContent = this.debugService.isEnabled() ? 'ON' : 'OFF';
+      debugToggle.style.backgroundColor = this.debugService.isEnabled()
+        ? 'var(--mario-green)'
+        : '#777';
+      debugToggle.style.boxShadow = this.debugService.isEnabled()
+        ? '0 3px 0 #2e8534'
+        : '0 3px 0 #555';
+    });
+
+    togglesContainer.appendChild(debugToggle);
+
+    settingsContainer.appendChild(togglesContainer);
+    this.pauseMenu.appendChild(settingsContainer);
+
+    // Controls reminder
+    const controlsReminder = document.createElement('div');
+    controlsReminder.style.fontSize = '10px';
+    controlsReminder.style.color = 'rgba(255, 255, 255, 0.7)';
+    controlsReminder.style.textAlign = 'center';
+    controlsReminder.textContent = 'Press ESC to resume';
+    this.pauseMenu.appendChild(controlsReminder);
+
+    // Add the menu to the body
+    document.body.appendChild(this.pauseMenu);
+
+    // Add entry animation
+    if (this.pauseMenu) {
+      this.pauseMenu.style.opacity = '0';
+      this.pauseMenu.style.transform = 'translate(-50%, -55%)';
+
+      setTimeout(() => {
+        if (this.pauseMenu) {
+          this.pauseMenu.style.opacity = '1';
+          this.pauseMenu.style.transform = 'translate(-50%, -50%)';
+        }
+      }, 10);
     }
   }
 
@@ -401,9 +540,29 @@ export default class Game {
    * Hide the pause menu
    */
   private hidePauseMenu(): void {
-    if (this.pauseMenu) {
-      this.pauseMenu.style.display = 'none';
+    if (!this.pauseMenu) {
+      return;
     }
+
+    // Add exit animation
+    this.pauseMenu.style.opacity = '0';
+    this.pauseMenu.style.transform = 'translate(-50%, -45%)';
+
+    // Remove blur effect
+    if (this.canvas) {
+      this.canvas.style.filter = '';
+    }
+
+    // Store a reference to the menu element
+    const menu = this.pauseMenu;
+    this.pauseMenu = null;
+
+    // Wait for animation to complete before removing
+    setTimeout(() => {
+      if (menu && menu.parentNode) {
+        menu.remove();
+      }
+    }, 300);
   }
 
   /**

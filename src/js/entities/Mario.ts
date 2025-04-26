@@ -104,7 +104,7 @@ function createMarioFactory(sprite: SpriteSheet, audio: AudioBoard) {
   }
 
   return function createMario(options?: EntityFactoryOptions): MarioEntity & InputReceiver {
-    const mario = new Entity() as MarioEntity & InputReceiver;
+    const mario = new Entity() as unknown as MarioEntity & InputReceiver;
     mario.audio = audio;
 
     if (options?.startX !== undefined && options?.startY !== undefined) {

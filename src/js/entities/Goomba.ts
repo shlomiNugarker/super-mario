@@ -55,7 +55,7 @@ function createGoombaFactory(sprite: SpriteSheet) {
   }
 
   return function createGoomba(options?: EntityFactoryOptions): EnemyEntity {
-    const goomba = new Entity() as EnemyEntity;
+    const goomba = new Entity() as unknown as EnemyEntity;
     goomba.size.set(16, 16);
 
     // Set initial position if provided
