@@ -54,7 +54,7 @@ export default class Trait {
    * @virtual
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  collides(us: ITraitEntity, _them: ITraitEntity): void {
+  collides(_us: ITraitEntity, _them: ITraitEntity): void {
     // Method implementation to be provided in subclasses
   }
 
@@ -66,7 +66,7 @@ export default class Trait {
    * @virtual
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  obstruct(entity: ITraitEntity, side: symbol, match: MatchTile): void {
+  obstruct(_entity: ITraitEntity, _side: symbol, _match: MatchTile): void {
     // Method implementation to be provided in subclasses
   }
 
@@ -78,7 +78,7 @@ export default class Trait {
    * @virtual
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(entity: ITraitEntity, gameContext: GameContext, level: Level): void {
+  update(_entity: ITraitEntity, _gameContext: GameContext, _level: Level): void {
     // Method implementation to be provided in subclasses
   }
 }

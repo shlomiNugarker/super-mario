@@ -11,7 +11,7 @@ export default class PendulumMove extends Trait {
     this.speed = -30;
   }
 
-  obstruct(entity: any, side: symbol): void {
+  obstruct(_entity: any, side: symbol): void {
     if (side === Sides.LEFT || side === Sides.RIGHT) {
       this.speed = -this.speed;
     }

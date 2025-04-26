@@ -1,5 +1,5 @@
 import Trait from '../Trait.ts';
-import { Entity } from '../Trait.ts';
+import Entity from '../Entity.ts';
 
 const MARK = Symbol('level timer earmark');
 
@@ -24,7 +24,7 @@ export default class LevelTimer extends Trait {
     this.currentTime = this.totalTime;
   }
 
-  update(entity: Entity, { deltaTime }: { deltaTime: number }, level: any): void {
+  update(_entity: Entity, { deltaTime }: { deltaTime: number }, level: any): void {
     this.currentTime -= deltaTime * 2.5;
 
     if (!level[MARK]) {

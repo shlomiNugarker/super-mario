@@ -1,5 +1,5 @@
 import Trait from '../Trait.ts';
-import { Entity } from '../Trait.ts';
+import Entity from '../Entity.ts';
 
 export default class Emitter extends Trait {
   private interval: number;

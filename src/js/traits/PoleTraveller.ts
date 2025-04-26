@@ -1,4 +1,3 @@
-import { Vec2 } from '../math.ts';
 import Trait from '../Trait.ts';
 
 export default class PoleTraveller extends Trait {

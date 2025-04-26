@@ -55,7 +55,7 @@ export default class Jump extends Trait {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(entity: EntityWithSounds, gameContext: { deltaTime: number }, level: any): void {
+  update(entity: EntityWithSounds, gameContext: { deltaTime: number }, _level: any): void {
     const { deltaTime } = gameContext;
 
     if (this.requestTime > 0) {

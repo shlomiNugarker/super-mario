@@ -122,7 +122,7 @@ function setupTriggers(levelSpec: any, level: Level): void {
   for (const triggerSpec of levelSpec.triggers) {
     const trigger = new Trigger();
 
-    trigger.conditions.push((entity: any, touches: any, gc: any, level: any) => {
+    trigger.conditions.push((entity: any, touches: any, _gc: any, level: any) => {
       (level as any).events.emit(
         Level.EVENT_TRIGGER as unknown as string,
         triggerSpec,
