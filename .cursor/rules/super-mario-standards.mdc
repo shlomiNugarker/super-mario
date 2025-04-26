@@ -1,0 +1,32 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+description: Advanced coding standards and best practices for Super Mario TypeScript Canvas Game
+globs: ["src/**/*.ts", "*.ts"]
+alwaysApply: true
+---
+
+- Use strict TypeScript typing throughout the project. Avoid `any` unless absolutely necessary.
+- Every new game behavior must be implemented as a Trait that can be dynamically attached to an Entity.
+- Maintain Entity purity: an Entity should only be a data container. Behaviors should live inside Traits.
+- Use PascalCase naming for Entities, Traits, Services, Scenes.
+- Keep the main game loop clean: update, collisions, and rendering must be separated concerns.
+- Handle all Entity-to-Entity collisions exclusively via the EntityCollider and Trait behaviors.
+- Draw calls on Canvas should be optimized: minimize context switches, group similar rendering operations.
+- Scene management (SceneRunner, TimedScene) must be asynchronous and support smooth transitions and loading indicators.
+- Assets (audio, images, sprite sheets) must be fully preloaded before starting gameplay.
+- Input handling must be routed only through InputRouter and KeyboardState — avoid manual DOM event listeners inside gameplay logic.
+- Traits must clean up after themselves (unbind events, stop timers) when removed or when the Entity is destroyed.
+- Do not directly manipulate the DOM. All rendering must occur inside Canvas layers.
+- Avoid magic numbers: constants like gravity, jump force, tile size should be declared centrally in the config files.
+- Audio playback must use AudioBoard to manage sound channels efficiently.
+- Use dependency injection for services (e.g., MusicController) instead of singleton patterns.
+- Keep the TileCollider and EntityCollider logic separated from other systems.
+- ESLint and Prettier configurations must pass on every code change before pushing.
+- Modularize code logically: Entities, Traits, Scenes, and Utilities must reside in their dedicated folders.
+- Public methods and complex logic must be documented using JSDoc-style comments.
+- Avoid logic duplication between Entities; reuse Traits and utility functions whenever possible.
+- Never modify or commit any files inside the `dist/` directory.
