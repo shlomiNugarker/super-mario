@@ -983,12 +983,14 @@ export default class Game {
       }
 
       const loadLevel = await createLevelLoader(loaderFactory);
-      const level = await LevelService.getLevel(name, loadLevel);
+
+      // Start the world with the selected level
+      await this.startWorld(name, loadLevel);
 
       // Remove loading screen for level
       this.clearAllLoadingIndicators();
 
-      return level;
+      return this.currentLevel;
     } catch (error) {
       console.error('Failed to load level:', error);
 

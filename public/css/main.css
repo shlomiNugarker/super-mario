@@ -169,6 +169,55 @@ body {
   backdrop-filter: blur(8px);
 }
 
+/* Level selection styles */
+.level-button {
+  background-color: var(--mario-blue);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 12px 8px;
+  margin: 5px;
+  cursor: pointer;
+  font-family: 'Press Start 2P', sans-serif;
+  font-size: 12px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 0 #2a5adf;
+  position: relative;
+  top: 0;
+  width: 100%;
+}
+
+.level-button:hover {
+  background-color: #5a8aff;
+  box-shadow: 0 6px 0 #2a5adf;
+  transform: translateY(-2px);
+}
+
+.level-button:active {
+  background-color: #3a6aef;
+  box-shadow: 0 2px 0 #2a5adf;
+  transform: translateY(2px);
+}
+
+/* Custom scrollbar for level selection */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
 .menu-title {
   font-size: 24px;
   margin-bottom: 20px;

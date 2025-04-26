@@ -205,6 +205,19 @@ const createStartScreen = () => {
   startButton.innerHTML = '<span style="margin-right: 10px">▶</span> START GAME';
   buttonsContainer.appendChild(startButton);
 
+  // Select level button
+  const selectLevelButton = document.createElement('button');
+  selectLevelButton.className = 'menu-button';
+  selectLevelButton.style.backgroundColor = 'var(--mario-green)';
+  selectLevelButton.style.boxShadow = '0 4px 0 #1a8a1a';
+  selectLevelButton.innerHTML = '<span style="margin-right: 10px">☰</span> SELECT LEVEL';
+
+  selectLevelButton.addEventListener('click', () => {
+    showLevelSelectionScreen(startScreen);
+  });
+
+  buttonsContainer.appendChild(selectLevelButton);
+
   // Continue game button (if save exists)
   const hasSavedGame = localStorage.getItem('mario-save') !== null;
 
@@ -301,6 +314,179 @@ const createStartScreen = () => {
 };
 
 /**
+ * Show level selection screen
+ */
+const showLevelSelectionScreen = (startScreen: HTMLElement) => {
+  // Hide start screen temporarily
+  startScreen.style.opacity = '0';
+  startScreen.style.transform = 'translate(-50%, -55%)';
+
+  // Create level selection screen
+  const levelScreen = document.createElement('div');
+  levelScreen.className = 'menu';
+  levelScreen.style.opacity = '0';
+  levelScreen.style.transform = 'translate(-50%, -45%)';
+  levelScreen.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+
+  // Add header
+  const headerArea = document.createElement('div');
+  headerArea.style.marginBottom = '20px';
+
+  const title = document.createElement('h1');
+  title.textContent = 'SELECT LEVEL';
+  title.style.fontFamily = "'Press Start 2P', sans-serif";
+  title.style.color = 'var(--mario-yellow)';
+  title.style.fontSize = '18px';
+  title.style.textShadow = '2px 2px 0 #e52521, -1px -1px 0 #4a7aff';
+  title.style.letterSpacing = '2px';
+  title.style.textAlign = 'center';
+  headerArea.appendChild(title);
+  levelScreen.appendChild(headerArea);
+
+  // Create scrollable level container
+  const levelContainer = document.createElement('div');
+  levelContainer.style.maxHeight = '250px';
+  levelContainer.style.overflowY = 'auto';
+  levelContainer.style.marginBottom = '20px';
+  levelContainer.style.padding = '10px';
+  levelContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+  levelContainer.style.borderRadius = '8px';
+  levelContainer.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+
+  // Get all unique level names (excluding debug levels)
+  const levelNames = [
+    '1-1',
+    '1-2',
+    '1-3',
+    '1-4',
+    '2-1',
+    '2-2',
+    '2-3',
+    '2-4',
+    '3-1',
+    '5-3',
+    '7-2',
+    '7-3',
+  ];
+
+  // Create a grid of level buttons
+  const levelsGrid = document.createElement('div');
+  levelsGrid.style.display = 'grid';
+  levelsGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+  levelsGrid.style.gap = '10px';
+
+  // Create level buttons
+  levelNames.forEach((levelName) => {
+    const levelButton = document.createElement('button');
+    levelButton.className = 'level-button';
+    levelButton.textContent = levelName;
+    levelButton.style.fontFamily = "'Press Start 2P', sans-serif";
+    levelButton.style.color = 'white';
+    levelButton.style.fontSize = '12px';
+    levelButton.style.padding = '12px 5px';
+    levelButton.style.backgroundColor = 'var(--mario-blue)';
+    levelButton.style.border = 'none';
+    levelButton.style.borderRadius = '4px';
+    levelButton.style.cursor = 'pointer';
+    levelButton.style.boxShadow = '0 4px 0 #2a5adf';
+    levelButton.style.transition = 'transform 0.1s ease, box-shadow 0.1s ease';
+
+    // Add hover and active effects
+    levelButton.addEventListener('mouseenter', () => {
+      levelButton.style.transform = 'translateY(-2px)';
+      levelButton.style.boxShadow = '0 6px 0 #2a5adf';
+    });
+
+    levelButton.addEventListener('mouseleave', () => {
+      levelButton.style.transform = 'translateY(0)';
+      levelButton.style.boxShadow = '0 4px 0 #2a5adf';
+    });
+
+    levelButton.addEventListener('click', () => {
+      // Remove the level screen
+      levelScreen.style.opacity = '0';
+      levelScreen.style.transform = 'translate(-50%, -45%)';
+
+      // Wait for animation to complete
+      setTimeout(() => {
+        levelScreen.remove();
+        startScreen.remove();
+
+        // Get the canvas element
+        const canvas = document.getElementById('screen') as HTMLCanvasElement;
+
+        // Initialize the game with the selected level
+        initGameWithLevel(canvas, levelName);
+      }, 500);
+    });
+
+    levelsGrid.appendChild(levelButton);
+  });
+
+  levelContainer.appendChild(levelsGrid);
+  levelScreen.appendChild(levelContainer);
+
+  // Back button
+  const backButton = document.createElement('button');
+  backButton.className = 'menu-button';
+  backButton.style.marginTop = '5px';
+  backButton.innerHTML = '<span style="margin-right: 10px">↩</span> BACK';
+  backButton.style.backgroundColor = '#666';
+  backButton.style.boxShadow = '0 4px 0 #444';
+
+  backButton.addEventListener('click', () => {
+    // Hide level screen
+    levelScreen.style.opacity = '0';
+    levelScreen.style.transform = 'translate(-50%, -45%)';
+
+    // Show start screen
+    startScreen.style.opacity = '1';
+    startScreen.style.transform = 'translate(-50%, -50%)';
+
+    // Remove level screen after animation
+    setTimeout(() => {
+      levelScreen.remove();
+    }, 500);
+  });
+
+  levelScreen.appendChild(backButton);
+
+  // Add to body
+  document.body.appendChild(levelScreen);
+
+  // Trigger animation
+  setTimeout(() => {
+    levelScreen.style.opacity = '1';
+    levelScreen.style.transform = 'translate(-50%, -50%)';
+  }, 100);
+};
+
+/**
+ * Initialize the game with a specific level
+ */
+const initGameWithLevel = async (canvas: HTMLCanvasElement, levelName: string) => {
+  try {
+    // Create the game instance
+    game = new Game(canvas);
+
+    // Initialize the game
+    await game.init();
+
+    // Add event listeners for game controls
+    addGameControlEventListeners(game);
+
+    // Set up cleanup for when the game is unloaded
+    setupCleanupHandlers();
+
+    // Load the specified level
+    await game.loadLevel(levelName);
+  } catch (error) {
+    console.error('Error initializing game:', error);
+    showErrorMessage('Failed to initialize the game. Please try again.');
+  }
+};
+
+/**
  * Start the game application
  */
 const start = () => {
@@ -326,8 +512,8 @@ const start = () => {
       // Remove the start screen
       startScreen.remove();
 
-      // Initialize the game
-      initGame(canvas);
+      // Initialize the game with the default level
+      initGameWithLevel(canvas, '1-1');
     }, 500);
   });
 };
