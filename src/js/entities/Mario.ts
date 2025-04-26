@@ -31,7 +31,7 @@ export function loadMario(audioContext: AudioContext) {
 function createMarioFactory(sprite: SpriteSheet, audio: AudioBoard) {
   // Validate sprite frames exist
   const validateSprites = () => {
-    const requiredFrames = ['idle', 'jump', 'run-1', 'run-2', 'run-3', 'break'];
+    const requiredFrames = ['idle', 'jump', 'run-1', 'run-2', 'run-3', 'break', 'die'];
     const missingFrames = requiredFrames.filter((frame) => !sprite.has(frame));
 
     if (missingFrames.length > 0) {
@@ -55,6 +55,11 @@ function createMarioFactory(sprite: SpriteSheet, audio: AudioBoard) {
   }
 
   function routeFrame(mario: Entity): string {
+    const killable = mario.getKillableTrait();
+    if (killable?.dead) {
+      return 'die';
+    }
+
     const jump = mario.getJumpTrait();
     if (jump?.falling) {
       return 'jump';
