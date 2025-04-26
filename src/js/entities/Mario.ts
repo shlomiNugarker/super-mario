@@ -9,14 +9,7 @@ import Solid from '../traits/Solid.ts';
 import Stomper from '../traits/Stomper.ts';
 import { loadAudioBoard } from '../loaders/audio.ts';
 import { loadSpriteSheet } from '../loaders/sprite.ts';
-import {
-  MarioEntity,
-  GoTrait,
-  JumpTrait,
-  KillableTrait,
-  PipeTravellerTrait,
-  PoleTravellerTrait,
-} from '../../types/entity';
+import { MarioEntity } from '../../types/entity';
 import { EntityFactoryOptions } from '../../types/entity';
 import SpriteSheet from '../SpriteSheet.ts';
 import AudioBoard from '../AudioBoard.ts';

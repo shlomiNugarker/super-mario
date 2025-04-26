@@ -7,12 +7,7 @@ import Solid from '../traits/Solid.ts';
 import Stomper from '../traits/Stomper.ts';
 import { loadSpriteSheet } from '../loaders/sprite.ts';
 import SpriteSheet from '../SpriteSheet.ts';
-import {
-  EnemyEntity,
-  KillableTrait,
-  PendulumMoveTrait,
-  EntityFactoryOptions,
-} from '../../types/entity';
+import { EnemyEntity, EntityFactoryOptions } from '../../types/entity';
 
 export function loadGoombaBrown() {
   return loadSpriteSheet('goomba-brown').then(createGoombaFactory);
@@ -44,7 +39,7 @@ class Behavior extends Trait {
 }
 
 function createGoombaFactory(sprite: SpriteSheet) {
-  const walkAnim = sprite.animations.get('walk');
+  const walkAnim = sprite.getAnimation('walk');
 
   function routeAnim(goomba: Entity): string {
     const killable = goomba.getKillableTrait();
@@ -52,7 +47,7 @@ function createGoombaFactory(sprite: SpriteSheet) {
       return 'flat';
     }
 
-    return walkAnim(goomba.lifetime);
+    return walkAnim ? walkAnim(goomba.lifetime) : 'walk-1';
   }
 
   function drawGoomba(this: Entity, context: CanvasRenderingContext2D): void {

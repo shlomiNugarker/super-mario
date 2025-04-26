@@ -1,8 +1,8 @@
 import Entity from '../Entity.ts';
-import Trait, { Entity as TraitEntity } from '../Trait.ts';
 import { loadSpriteSheet } from '../loaders/sprite.ts';
 import { findPlayers } from '../player.ts';
 import SpriteSheet from '../SpriteSheet.ts';
+import Trait from '../Trait.ts';
 
 export function loadPiranhaPlant() {
   return loadSpriteSheet('piranha-plant').then(createPiranhaPlantFactory);

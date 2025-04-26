@@ -39,7 +39,7 @@ export default class EventEmitter {
    * @param name Event name
    * @param callback Callback to process
    */
-  process(name: string | symbol, callback: EventCallback): void {
+  process(_name: string | symbol, callback: EventCallback): void {
     callback();
   }
 }

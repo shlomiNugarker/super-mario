@@ -24,7 +24,6 @@ export interface ShakeOptions {
 
 export default class ScreenShakeService {
   private static instance: ScreenShakeService;
-  private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
   private isShaking: boolean = false;
   private shakeOptions: ShakeOptions | null = null;
@@ -55,8 +54,7 @@ export default class ScreenShakeService {
    * @param canvas The game canvas
    * @param ctx The rendering context
    */
-  public init(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void {
-    this.canvas = canvas;
+  public init(_canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void {
     this.ctx = ctx;
 
     // Load settings

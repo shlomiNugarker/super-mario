@@ -15,10 +15,13 @@ export default class Scene implements IScene {
   }
 
   draw(gameContext: GameContext): void {
-    this.comp.draw(gameContext.videoContext, gameContext.camera);
+    if (gameContext.videoContext && gameContext.camera) {
+      this.comp.draw(gameContext.videoContext, gameContext.camera);
+    }
   }
 
-  update(gameContext: GameContext): void {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  update(_gameContext: GameContext): void {}
 
   pause(): void {
     console.log('Pause', this);

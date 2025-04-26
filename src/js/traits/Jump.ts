@@ -46,7 +46,7 @@ export default class Jump extends Trait {
     console.log('Jump.cancel() called');
   }
 
-  obstruct(entity: EntityWithSounds, side: symbol): void {
+  obstruct(_entity: EntityWithSounds, side: symbol): void {
     if (side === Sides.BOTTOM) {
       this.ready = 1;
     } else if (side === Sides.TOP) {

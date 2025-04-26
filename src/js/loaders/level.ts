@@ -26,7 +26,7 @@ function createSpawner() {
       this.entities.sort((a: Entity, b: Entity) => (a.pos.x < b.pos.x ? -1 : 1));
     }
 
-    update(entity: Entity, gameContext: any, level: Level): void {
+    update(_entity: Entity, _gameContext: any, level: Level): void {
       const cameraMaxX = level.camera.pos.x + level.camera.size.x + this.offsetX;
       while (this.entities[0]) {
         if (cameraMaxX > this.entities[0].pos.x) {
@@ -68,6 +68,8 @@ function setupCamera(level: Level): void {
     if (resolver.tileSize > maxTileSize) {
       maxTileSize = resolver.tileSize;
     }
+    // @ts-expect-error - We know this is accessing protected/private properties
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     resolver.matrix.forEach((tile: any, x: number, y: number) => {
       if (x > maxX) {
         maxX = x;
@@ -162,6 +164,7 @@ export function createLevelLoader(entityFactory: any) {
         setupCamera(level);
 
         for (const resolver of level.tileCollider.resolvers) {
+          // @ts-expect-error - Type mismatch between two SpriteSheet definitions
           const backgroundLayer = createBackgroundLayer(level, resolver.matrix, backgroundSprites);
           // @ts-expect-error - We know this is accessing protected/private properties
           level.comp.layers.push(backgroundLayer);

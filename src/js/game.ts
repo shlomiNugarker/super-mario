@@ -470,7 +470,7 @@ export default class Game {
     loadingScreen.complete();
 
     // Level trigger events
-    level.events.listen(LevelEvents.TRIGGER as any, (spec: any, trigger: any, touches: any) => {
+    level.events.listen(LevelEvents.TRIGGER as any, (spec: any, _trigger: any, touches: any) => {
       if (spec.type === 'goto') {
         if (findPlayers(touches).next().done === false) {
           this.startWorld(spec.name, loadLevel);

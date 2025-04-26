@@ -54,7 +54,7 @@ export default class Trait {
    * @virtual
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  collides(us: ITraitEntity, them: ITraitEntity): void {
+  collides(us: ITraitEntity, _them: ITraitEntity): void {
     // Method implementation to be provided in subclasses
   }
 

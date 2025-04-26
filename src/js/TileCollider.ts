@@ -70,8 +70,8 @@ export default class TileCollider {
     for (const resolver of this.resolvers) {
       const matches = resolver.searchByRange(x, x, entity.bounds.top, entity.bounds.bottom);
 
-      matches.forEach((match: MatchTile) => {
-        this.handle(0, entity, match, resolver, gameContext, level);
+      matches.forEach((match) => {
+        this.handle(0, entity, match as MatchTile, resolver, gameContext, level);
       });
     }
   }
@@ -89,8 +89,8 @@ export default class TileCollider {
     for (const resolver of this.resolvers) {
       const matches = resolver.searchByRange(entity.bounds.left, entity.bounds.right, y, y);
 
-      matches.forEach((match: MatchTile) => {
-        this.handle(1, entity, match, resolver, gameContext, level);
+      matches.forEach((match) => {
+        this.handle(1, entity, match as MatchTile, resolver, gameContext, level);
       });
     }
   }

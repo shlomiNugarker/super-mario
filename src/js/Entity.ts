@@ -259,4 +259,13 @@ export default class Entity implements ITraitEntity {
 
     this.lifetime += gameContext.deltaTime;
   }
+
+  /**
+   * Draw method required by ITraitEntity interface
+   * Will be overridden by entity instances
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  draw(_context: CanvasRenderingContext2D): void {
+    // Base implementation is empty
+  }
 }

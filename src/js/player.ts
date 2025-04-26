@@ -2,7 +2,8 @@ import Player from './traits/Player.ts';
 import LevelTimer from './traits/LevelTimer.ts';
 import Entity from './Entity.ts';
 
-export function makePlayer(entity: Entity, name: string): void {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function makePlayer(entity: Entity, _name: string): void {
   const player = new Player();
   player.name = 'MARIO';
   entity.addTrait(player);

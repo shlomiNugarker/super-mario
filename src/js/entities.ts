@@ -7,8 +7,11 @@ import { loadBrickShrapnel } from './entities/BrickShrapnel.ts';
 import { loadPipePortal } from './entities/PipePortal.ts';
 import { loadFlagPole } from './entities/FlagPole.ts';
 import { loadMario } from './entities/Mario.ts';
-import { EntityFactory, EntityFactories } from '../types/common';
+import { EntityFactories } from '../types/common';
 import Entity from './Entity.ts';
+
+// Local version of EntityFactory that works with our Entity type
+type EntityFactory = (props?: Record<string, any>) => Entity;
 
 /**
  * Create an entity pool for efficiency
@@ -47,7 +50,16 @@ function createPool(size: number) {
  * @returns Promise<EntityFactories>
  */
 export async function loadEntities(audioContext: AudioContext): Promise<EntityFactories> {
-  const entityFactories: EntityFactories = {};
+  // Initialize with required properties to satisfy TypeScript
+  const entityFactories: Partial<EntityFactories> = {
+    mario: undefined as any,
+    goomba: undefined as any,
+    koopa: undefined as any,
+    piranha: undefined as any,
+    flagpole: undefined as any,
+    bullet: undefined as any,
+    cannon: undefined as any,
+  };
 
   // Wrapper for entity loaders
   function setup(loader: (context: AudioContext) => Promise<any>): Promise<EntityFactory> {
@@ -66,13 +78,13 @@ export async function loadEntities(audioContext: AudioContext): Promise<EntityFa
 
   function addAs(name: string) {
     return function addFactory(factory: EntityFactory): void {
-      entityFactories[name] = factory;
+      entityFactories[name] = factory as any;
     };
   }
 
   await Promise.all([
     setup(loadMario).then(addAs('mario')),
-    setup(loadPiranhaPlant).then(addAs('piranha-plant')),
+    setup(loadPiranhaPlant).then(addAs('piranha')),
     setup(loadGoombaBrown).then(addAs('goomba-brown')),
     setup(loadGoombaBlue).then(addAs('goomba-blue')),
     setup(loadKoopaGreen).then(addAs('koopa-green')),
@@ -80,9 +92,9 @@ export async function loadEntities(audioContext: AudioContext): Promise<EntityFa
     setup(loadBullet).then(addAs('bullet')),
     setup(loadCannon).then(addAs('cannon')),
     setup(loadPipePortal).then(addAs('pipe-portal')),
-    setup(loadFlagPole).then(addAs('flag-pole')),
+    setup(loadFlagPole).then(addAs('flagpole')),
     setup(loadBrickShrapnel).then(createPool(8)).then(addAs('brickShrapnel')),
   ]);
 
-  return entityFactories;
+  return entityFactories as EntityFactories;
 }

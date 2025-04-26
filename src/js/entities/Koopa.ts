@@ -77,7 +77,8 @@ class Behavior extends Trait {
     }
   }
 
-  handleStomp(us: Entity, them: Entity): void {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  handleStomp(us: Entity, _them: Entity): void {
     if (this.state === STATE_WALKING) {
       this.hide(us);
     } else if (this.state === STATE_HIDING) {
@@ -109,7 +110,8 @@ class Behavior extends Trait {
     this.state = STATE_HIDING;
   }
 
-  unhide(us: Entity): void {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  unhide(_us: Entity): void {
     // Reset to walking state
     this.state = STATE_WALKING;
   }

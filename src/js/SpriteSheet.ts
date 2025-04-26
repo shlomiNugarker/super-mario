@@ -13,6 +13,10 @@ export default class SpriteSheet {
     this.animations = new Map();
   }
 
+  getAnimation(name: string): ((distance: number) => string) | undefined {
+    return this.animations.get(name);
+  }
+
   defineAnim(name: string, animation: (distance: number) => string): void {
     this.animations.set(name, animation);
   }
