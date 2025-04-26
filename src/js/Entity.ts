@@ -81,6 +81,9 @@ export default class Entity implements ITraitEntity {
   lifetime: number;
   traits: Map<TraitConstructor, Trait>;
 
+  // Cache for trait lookups to improve performance
+  private traitCache: Map<string, Trait | undefined>;
+
   constructor() {
     this.id = null;
     this.audio = new AudioBoard();
@@ -95,6 +98,7 @@ export default class Entity implements ITraitEntity {
     this.lifetime = 0;
 
     this.traits = new Map();
+    this.traitCache = new Map();
   }
 
   /**
@@ -103,6 +107,27 @@ export default class Entity implements ITraitEntity {
    */
   addTrait(trait: Trait): void {
     this.traits.set(trait.constructor as TraitConstructor, trait);
+    // Clear cache when adding a trait
+    this.traitCache.clear();
+  }
+
+  /**
+   * Removes a trait from the entity
+   * @param TraitClass The trait constructor to remove
+   */
+  removeTrait<T extends Trait>(TraitClass: TraitConstructor<T>): void {
+    this.traits.delete(TraitClass as TraitConstructor);
+    // Clear cache when removing a trait
+    this.traitCache.clear();
+  }
+
+  /**
+   * Checks if entity has a trait
+   * @param TraitClass The trait constructor to check for
+   * @returns True if entity has the trait
+   */
+  hasTrait<T extends Trait>(TraitClass: TraitConstructor<T>): boolean {
+    return this.traits.has(TraitClass as TraitConstructor);
   }
 
   /**
@@ -111,7 +136,15 @@ export default class Entity implements ITraitEntity {
    * @returns The trait instance or undefined if not found
    */
   getTrait<T extends Trait>(TraitClass: TraitConstructor<T>): T | undefined {
-    return this.traits.get(TraitClass as TraitConstructor) as T | undefined;
+    const cacheKey = TraitClass.name;
+
+    if (this.traitCache.has(cacheKey)) {
+      return this.traitCache.get(cacheKey) as T | undefined;
+    }
+
+    const trait = this.traits.get(TraitClass as TraitConstructor) as T | undefined;
+    this.traitCache.set(cacheKey, trait);
+    return trait;
   }
 
   /**
@@ -120,7 +153,16 @@ export default class Entity implements ITraitEntity {
    * @returns The first matching trait or undefined
    */
   getTraitByProperties<T extends Trait>(predicate: (trait: Trait) => trait is T): T | undefined {
-    return Array.from(this.traits.values()).find(predicate);
+    // Check cache for the predicate result
+    const cacheKey = predicate.toString();
+
+    if (this.traitCache.has(cacheKey)) {
+      return this.traitCache.get(cacheKey) as T | undefined;
+    }
+
+    const trait = Array.from(this.traits.values()).find(predicate);
+    this.traitCache.set(cacheKey, trait);
+    return trait;
   }
 
   /**
@@ -199,14 +241,13 @@ export default class Entity implements ITraitEntity {
    */
   getPendulumMoveTrait(): PendulumMoveTrait | undefined {
     return this.getTraitByProperties(
-      (trait): trait is PendulumMoveTrait =>
-        'speed' in trait && trait.constructor.name === 'PendulumMove'
+      (trait): trait is PendulumMoveTrait => 'speed' in trait && 'amplitude' in trait
     );
   }
 
   /**
-   * Handles collision with another entity
-   * @param candidate The entity collided with
+   * Handle collision with another entity
+   * @param candidate Entity to collide with
    */
   collides(candidate: Entity): void {
     this.traits.forEach((trait) => {
@@ -215,9 +256,9 @@ export default class Entity implements ITraitEntity {
   }
 
   /**
-   * Handles obstruction from the environment
-   * @param side The side that is obstructed
-   * @param match The matching object causing obstruction
+   * Handle obstruction from a tile
+   * @param side Which side was obstructed
+   * @param match The tile that caused the obstruction
    */
   obstruct(side: symbol, match: MatchTile): void {
     this.traits.forEach((trait) => {
@@ -226,12 +267,9 @@ export default class Entity implements ITraitEntity {
   }
 
   /**
-   * Finalizes the entity state after update
-   * Processes pending events and tasks
+   * Finalize all traits, triggering any queued events
    */
   finalize(): void {
-    this.events.emit(Trait.EVENT_TASK, this);
-
     this.traits.forEach((trait) => {
       trait.finalize(this);
     });
@@ -240,9 +278,9 @@ export default class Entity implements ITraitEntity {
   }
 
   /**
-   * Plays all queued sounds
-   * @param audioBoard The audio board to use
-   * @param audioContext The audio context
+   * Play all sounds that have been triggered
+   * @param audioBoard Audio board to use
+   * @param audioContext Audio context
    */
   playSounds(audioBoard: AudioBoard, audioContext: AudioContext): void {
     this.sounds.forEach((name) => {
@@ -253,26 +291,24 @@ export default class Entity implements ITraitEntity {
   }
 
   /**
-   * Updates the entity state
-   * @param gameContext The current game context
-   * @param level The current level
+   * Update entity state
+   * @param gameContext Game context
+   * @param level Level
    */
   update(gameContext: GameContext, level: Level): void {
     this.traits.forEach((trait) => {
       trait.update(this, gameContext, level);
     });
 
-    this.playSounds(this.audio, gameContext.audioContext);
-
     this.lifetime += gameContext.deltaTime;
   }
 
   /**
-   * Draw method required by ITraitEntity interface
-   * Will be overridden by entity instances
+   * Draw the entity
+   * @param context Canvas context
+   * @virtual
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   draw(_context: CanvasRenderingContext2D): void {
-    // Base implementation is empty
+    // Implementation to be provided in subclasses
   }
 }

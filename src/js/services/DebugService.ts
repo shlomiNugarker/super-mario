@@ -8,6 +8,8 @@ export default class DebugService {
   private debugElements: Map<string, HTMLElement>;
   private container: HTMLElement | null;
   private debugValues: Map<string, any>;
+  private enabled: boolean = false;
+  private debugInfo: Record<string, string | number | boolean> = {};
 
   private constructor() {
     this.debugElements = new Map();
@@ -44,6 +46,13 @@ export default class DebugService {
     this.container.style.display = RUNTIME_CONFIG.debugEnabled ? 'block' : 'none';
 
     document.body.appendChild(this.container);
+
+    // Get debug state from localStorage if available
+    const storedDebug = localStorage.getItem('debug-enabled');
+    this.enabled = storedDebug === 'true';
+
+    // Initialize basic debug info
+    this.set('Debug Mode', this.enabled ? 'ON' : 'OFF');
   }
 
   /**
@@ -67,6 +76,8 @@ export default class DebugService {
     }
 
     element.textContent = `${key}: ${value}`;
+
+    this.debugInfo[key] = value;
   }
 
   /**
@@ -77,16 +88,27 @@ export default class DebugService {
     if (this.container) {
       this.container.style.display = RUNTIME_CONFIG.debugEnabled ? 'block' : 'none';
     }
+
+    this.enabled = !this.enabled;
+    localStorage.setItem('debug-enabled', this.enabled.toString());
+    this.set('Debug Mode', this.enabled ? 'ON' : 'OFF');
   }
 
   /**
-   * Clear all debug values
+   * Enable debug mode
    */
-  public clear(): void {
-    this.debugElements.clear();
-    this.debugValues.clear();
-    if (this.container) {
-      this.container.innerHTML = '';
+  public enable(): void {
+    if (!this.enabled) {
+      this.toggle();
+    }
+  }
+
+  /**
+   * Disable debug mode
+   */
+  public disable(): void {
+    if (this.enabled) {
+      this.toggle();
     }
   }
 
@@ -108,5 +130,13 @@ export default class DebugService {
       result[key] = value;
     });
     return result;
+  }
+
+  /**
+   * Get all debug information as a record
+   * @returns All debug information
+   */
+  public getDebugInfo(): Record<string, string | number | boolean> {
+    return this.getAll();
   }
 }

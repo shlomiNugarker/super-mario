@@ -1,7 +1,7 @@
 import { ASSET_PATHS } from '../config';
 
 /**
- * Types of assets that can be loaded
+ * Asset types that can be managed by the AssetService
  */
 export enum AssetType {
   IMAGE = 'image',
@@ -11,41 +11,78 @@ export enum AssetType {
 }
 
 /**
+ * Asset priority for loading
+ */
+export enum AssetPriority {
+  CRITICAL = 0, // Must be loaded immediately (blocking)
+  HIGH = 1, // Should be loaded early (non-blocking)
+  MEDIUM = 2, // Standard priority
+  LOW = 3, // Load when idle
+  LAZY = 4, // Only load when explicitly requested
+}
+
+/**
+ * Asset status
+ */
+export enum AssetStatus {
+  PENDING = 'pending', // Not yet loaded
+  LOADING = 'loading', // Currently loading
+  LOADED = 'loaded', // Successfully loaded
+  ERROR = 'error', // Failed to load
+  EVICTED = 'evicted', // Removed from cache
+}
+
+/**
  * Asset metadata
  */
-export interface Asset {
+interface AssetMetadata {
   type: AssetType;
   url: string;
-  data?: any;
-  loaded: boolean;
+  key: string;
+  priority: AssetPriority;
+  status: AssetStatus;
+  size: number;
+  lastAccessed: number;
+  error?: Error;
 }
 
 /**
- * Progress information during loading
+ * Asset registry entry
  */
-export interface LoadingProgress {
-  total: number;
-  loaded: number;
-  percentage: number;
+interface AssetRegistryEntry<T> extends AssetMetadata {
+  data?: T;
+  dependencies?: string[];
 }
 
 /**
- * Service for managing game assets (images, audio, data files)
+ * Progress callback for asset loading
+ */
+export type ProgressCallback = (progress: { percentage: number }) => void;
+
+/**
+ * Asset service for managing game assets
  */
 export default class AssetService {
   private static instance: AssetService;
-  private assets: Map<string, Asset>;
-  private baseUrl: string;
-  private audioContext: AudioContext | null;
+  private registry: Map<string, AssetRegistryEntry<unknown>> = new Map();
+  private loadingQueue: string[] = [];
+  private isLoading: boolean = false;
+  private maxCacheSize: number = 100 * 1024 * 1024; // 100MB default
+  private currentCacheSize: number = 0;
+  private concurrentLoads: number = 3;
+  private activeLoads: number = 0;
+  private baseUrl: string = '';
 
-  private constructor() {
-    this.assets = new Map();
-    this.baseUrl = '';
-    this.audioContext = null;
-  }
+  // Essential assets that should never be evicted
+  private essentialAssets: Set<string> = new Set();
 
   /**
-   * Get the singleton instance
+   * Private constructor (singleton pattern)
+   */
+  private constructor() {}
+
+  /**
+   * Get singleton instance
    */
   public static getInstance(): AssetService {
     if (!AssetService.instance) {
@@ -55,99 +92,309 @@ export default class AssetService {
   }
 
   /**
-   * Set the base URL for assets
-   * @param url Base URL
+   * Configure the asset service
+   * @param options Configuration options
    */
-  public setBaseUrl(url: string): void {
-    this.baseUrl = url.endsWith('/') ? url : url + '/';
+  public configure(options: {
+    maxCacheSize?: number;
+    concurrentLoads?: number;
+    baseUrl?: string;
+  }): void {
+    if (options.maxCacheSize !== undefined) {
+      this.maxCacheSize = options.maxCacheSize;
+    }
+
+    if (options.concurrentLoads !== undefined) {
+      this.concurrentLoads = options.concurrentLoads;
+    }
+
+    if (options.baseUrl !== undefined) {
+      this.baseUrl = options.baseUrl.endsWith('/') ? options.baseUrl : `${options.baseUrl}/`;
+    }
   }
 
   /**
-   * Register an asset to be loaded
-   * @param id Asset ID
-   * @param url Asset URL (relative to base URL)
-   * @param type Asset type
-   */
-  public registerAsset(id: string, url: string, type: AssetType): void {
-    this.assets.set(id, {
-      type,
-      url,
-      loaded: false,
-    });
-  }
-
-  /**
-   * Register a batch of assets by type
-   * @param assets Map of asset IDs to relative URLs
-   * @param type Asset type
-   */
-  public registerAssets(assets: Record<string, string>, type: AssetType): void {
-    Object.entries(assets).forEach(([id, url]) => {
-      this.registerAsset(id, url, type);
-    });
-  }
-
-  /**
-   * Load all registered assets
-   * @param progressCallback Callback for loading progress updates
-   * @returns Promise that resolves when all assets are loaded
-   */
-  public async loadAll(progressCallback?: (progress: LoadingProgress) => void): Promise<void> {
-    const total = this.assets.size;
-    let loaded = 0;
-
-    const promises = Array.from(this.assets.entries()).map(async ([id, asset]) => {
-      try {
-        const data = await this.loadAsset(asset.type, this.baseUrl + asset.url);
-        this.assets.set(id, { ...asset, data, loaded: true });
-
-        loaded++;
-        if (progressCallback) {
-          progressCallback({
-            total,
-            loaded,
-            percentage: Math.round((loaded / total) * 100),
-          });
-        }
-      } catch (error) {
-        console.error(`Failed to load asset ${id} (${asset.url}):`, error);
-      }
-    });
-
-    await Promise.all(promises);
-  }
-
-  /**
-   * Load an asset of the specified type
-   * @param type Asset type
+   * Register an asset
+   * @param key Asset key
    * @param url Asset URL
-   * @returns Promise that resolves with the loaded asset
+   * @param type Asset type
+   * @param priority Asset priority
+   * @param dependencies Asset dependencies
    */
-  private async loadAsset(type: AssetType, url: string): Promise<any> {
-    switch (type) {
-      case AssetType.IMAGE:
-        return this.loadImage(url);
-      case AssetType.AUDIO:
-        return this.loadAudio(url);
-      case AssetType.JSON:
-        return this.loadJson(url);
-      case AssetType.TEXT:
-        return this.loadText(url);
-      default:
-        throw new Error(`Unsupported asset type: ${type}`);
+  public register<T>(
+    key: string,
+    url: string,
+    type: AssetType,
+    priority: AssetPriority = AssetPriority.MEDIUM,
+    dependencies: string[] = []
+  ): void {
+    // Check if asset is already registered
+    if (this.registry.has(key)) {
+      console.warn(`Asset with key ${key} is already registered`);
+      return;
+    }
+
+    // Ensure the URL is properly formed
+    const fullUrl = url.startsWith('http') || url.startsWith('/') ? url : `${this.baseUrl}${url}`;
+
+    // Register the asset
+    this.registry.set(key, {
+      key,
+      url: fullUrl,
+      type,
+      priority,
+      status: AssetStatus.PENDING,
+      size: 0,
+      lastAccessed: Date.now(),
+      dependencies,
+    });
+
+    // Sort the loading queue by priority
+    this.sortQueue();
+  }
+
+  /**
+   * Mark an asset as essential (never evict)
+   * @param key Asset key
+   */
+  public markAsEssential(key: string): void {
+    if (!this.registry.has(key)) {
+      console.warn(`Cannot mark asset ${key} as essential: not registered`);
+      return;
+    }
+
+    this.essentialAssets.add(key);
+  }
+
+  /**
+   * Sort the loading queue by priority
+   */
+  private sortQueue(): void {
+    // Create a new queue with only pending assets
+    this.loadingQueue = Array.from(this.registry.entries())
+      .filter(([_, asset]) => asset.status === AssetStatus.PENDING)
+      .sort((a, b) => a[1].priority - b[1].priority)
+      .map(([key]) => key);
+  }
+
+  /**
+   * Preload essential assets
+   */
+  public async preloadEssentialAssets(): Promise<void> {
+    // Find all critical assets
+    const criticalAssets = Array.from(this.registry.entries())
+      .filter(([_, asset]) => asset.priority === AssetPriority.CRITICAL)
+      .map(([key]) => key);
+
+    // Mark all critical assets as essential
+    criticalAssets.forEach((key) => this.markAsEssential(key));
+
+    // Load all critical assets
+    await Promise.all(criticalAssets.map((key) => this.load(key)));
+  }
+
+  /**
+   * Preload all assets in the background
+   * @param progressCallback Progress callback
+   */
+  public preloadAllInBackground(progressCallback?: ProgressCallback): void {
+    const totalAssets = this.registry.size;
+    let loadedAssets = 0;
+
+    const updateProgress = () => {
+      loadedAssets++;
+
+      if (progressCallback) {
+        const percentage = Math.round((loadedAssets / totalAssets) * 100);
+        progressCallback({ percentage });
+      }
+    };
+
+    // Process the loading queue
+    this.processQueue(updateProgress);
+  }
+
+  /**
+   * Process the loading queue
+   * @param onAssetLoaded Callback when an asset is loaded
+   */
+  private processQueue(onAssetLoaded?: () => void): void {
+    if (this.isLoading || this.loadingQueue.length === 0) {
+      return;
+    }
+
+    this.isLoading = true;
+
+    const processNext = () => {
+      if (this.loadingQueue.length === 0 || this.activeLoads >= this.concurrentLoads) {
+        if (this.activeLoads === 0) {
+          this.isLoading = false;
+        }
+        return;
+      }
+
+      // Get the next asset to load
+      const key = this.loadingQueue.shift();
+      if (!key) return;
+
+      // Check if it's already loaded or loading
+      const asset = this.registry.get(key);
+      if (!asset || asset.status !== AssetStatus.PENDING) {
+        processNext();
+        return;
+      }
+
+      // Load the asset
+      this.activeLoads++;
+      asset.status = AssetStatus.LOADING;
+
+      this.loadAsset(key)
+        .then(() => {
+          if (onAssetLoaded) {
+            onAssetLoaded();
+          }
+        })
+        .catch((error) => {
+          console.error(`Failed to load asset ${key}:`, error);
+        })
+        .finally(() => {
+          this.activeLoads--;
+          processNext();
+        });
+
+      // Process the next asset
+      processNext();
+    };
+
+    // Start processing
+    processNext();
+  }
+
+  /**
+   * Load an asset
+   * @param key Asset key
+   */
+  public async load<T>(key: string): Promise<T> {
+    // Check if the asset is registered
+    const asset = this.registry.get(key);
+    if (!asset) {
+      throw new Error(`Asset with key ${key} is not registered`);
+    }
+
+    // If the asset is already loaded, return it
+    if (asset.status === AssetStatus.LOADED && asset.data !== undefined) {
+      // Update last accessed time
+      asset.lastAccessed = Date.now();
+      return asset.data as T;
+    }
+
+    // If the asset is already loading, wait for it
+    if (asset.status === AssetStatus.LOADING) {
+      return new Promise<T>((resolve, reject) => {
+        const checkInterval = setInterval(() => {
+          const updatedAsset = this.registry.get(key);
+          if (!updatedAsset) {
+            clearInterval(checkInterval);
+            reject(new Error(`Asset with key ${key} no longer exists`));
+            return;
+          }
+
+          if (updatedAsset.status === AssetStatus.LOADED && updatedAsset.data !== undefined) {
+            clearInterval(checkInterval);
+            resolve(updatedAsset.data as T);
+          } else if (updatedAsset.status === AssetStatus.ERROR) {
+            clearInterval(checkInterval);
+            reject(updatedAsset.error || new Error(`Failed to load asset ${key}`));
+          }
+        }, 50);
+      });
+    }
+
+    // Load dependencies first
+    if (asset.dependencies && asset.dependencies.length > 0) {
+      await Promise.all(asset.dependencies.map((dep) => this.load(dep)));
+    }
+
+    // Load the asset
+    return this.loadAsset<T>(key);
+  }
+
+  /**
+   * Internal method to load an asset
+   * @param key Asset key
+   */
+  private async loadAsset<T>(key: string): Promise<T> {
+    const asset = this.registry.get(key);
+    if (!asset) {
+      throw new Error(`Asset with key ${key} is not registered`);
+    }
+
+    // Update status
+    asset.status = AssetStatus.LOADING;
+
+    try {
+      // Make room for the asset if needed
+      await this.ensureCacheSpace();
+
+      // Load the asset based on its type
+      let data: unknown;
+      let size = 0;
+
+      switch (asset.type) {
+        case AssetType.IMAGE:
+          data = await this.loadImage(asset.url);
+          size = this.estimateImageSize(data as HTMLImageElement);
+          break;
+
+        case AssetType.AUDIO:
+          data = await this.loadAudio(asset.url);
+          size = this.estimateAudioSize(data as AudioBuffer);
+          break;
+
+        case AssetType.JSON:
+          const jsonText = await this.loadText(asset.url);
+          data = JSON.parse(jsonText);
+          size = jsonText.length * 2; // Rough estimate
+          break;
+
+        case AssetType.TEXT:
+          data = await this.loadText(asset.url);
+          size = (data as string).length * 2; // Rough estimate
+          break;
+
+        default:
+          throw new Error(`Unsupported asset type: ${asset.type}`);
+      }
+
+      // Update asset information
+      asset.data = data;
+      asset.status = AssetStatus.LOADED;
+      asset.size = size;
+      asset.lastAccessed = Date.now();
+
+      // Update cache size
+      this.currentCacheSize += size;
+
+      return data as T;
+    } catch (error) {
+      // Handle error
+      asset.status = AssetStatus.ERROR;
+      asset.error = error instanceof Error ? error : new Error(String(error));
+      throw error;
     }
   }
 
   /**
    * Load an image
    * @param url Image URL
-   * @returns Promise that resolves with the loaded image
    */
   private loadImage(url: string): Promise<HTMLImageElement> {
-    return new Promise((resolve, reject) => {
+    return new Promise<HTMLImageElement>((resolve, reject) => {
       const image = new Image();
+
       image.onload = () => resolve(image);
       image.onerror = () => reject(new Error(`Failed to load image: ${url}`));
+
       image.src = url;
     });
   }
