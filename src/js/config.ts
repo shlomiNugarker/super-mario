@@ -9,12 +9,17 @@ export const CANVAS_HEIGHT = 240;
 
 // Physics settings
 export const GRAVITY = 1500;
-export const FRICTION = 1 / 5000;
-export const FRICTION_FAST = 1 / 1000;
+// גרירה נמוכה (1/5000) = מהירות גבוהה (ריצה)
+export const LOW_FRICTION = 1 / 5000;
+// גרירה גבוהה (1/1000) = מהירות נמוכה (הליכה)
+export const HIGH_FRICTION = 1 / 1000;
+// שמירה על השמות הישנים לתאימות עם קוד קיים
+export const FRICTION = LOW_FRICTION;
+export const FRICTION_FAST = HIGH_FRICTION;
 export const DRAG_FACTOR = 1 / 5000;
 
 // Player settings
-export const PLAYER_JUMP_VELOCITY = 375;
+export const PLAYER_JUMP_VELOCITY = 175;
 export const PLAYER_JUMP_DURATION = 0.3;
 export const PLAYER_JUMP_GRACE_PERIOD = 0.1;
 export const PLAYER_ACCELERATION = 400;

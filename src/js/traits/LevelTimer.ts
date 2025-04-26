@@ -1,5 +1,6 @@
 import Trait from '../Trait.ts';
 import Entity from '../Entity.ts';
+import { LEVEL_TIMER_TOTAL, LEVEL_TIMER_HURRY, LEVEL_TIMER_DECREMENT_RATE } from '../config.ts';
 
 const MARK = Symbol('level timer earmark');
 
@@ -14,9 +15,9 @@ export default class LevelTimer extends Trait {
 
   constructor() {
     super();
-    this.totalTime = 400;
+    this.totalTime = LEVEL_TIMER_TOTAL;
     this.currentTime = this.totalTime;
-    this.hurryTime = 100;
+    this.hurryTime = LEVEL_TIMER_HURRY;
     this.hurryEmitted = null;
   }
 
@@ -25,7 +26,7 @@ export default class LevelTimer extends Trait {
   }
 
   update(_entity: Entity, { deltaTime }: { deltaTime: number }, level: any): void {
-    this.currentTime -= deltaTime * 2.5;
+    this.currentTime -= deltaTime * LEVEL_TIMER_DECREMENT_RATE;
 
     if (!level[MARK]) {
       this.hurryEmitted = null;

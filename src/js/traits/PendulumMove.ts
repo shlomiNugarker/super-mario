@@ -1,5 +1,6 @@
 import { Sides } from '../Entity.ts';
 import Trait from '../Trait.ts';
+import { PENDULUM_SPEED } from '../config.ts';
 
 export default class PendulumMove extends Trait {
   private enabled: boolean;
@@ -8,7 +9,7 @@ export default class PendulumMove extends Trait {
   constructor() {
     super();
     this.enabled = true;
-    this.speed = -30;
+    this.speed = -PENDULUM_SPEED;
   }
 
   obstruct(_entity: any, side: symbol): void {

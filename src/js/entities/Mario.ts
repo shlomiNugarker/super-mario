@@ -14,11 +14,11 @@ import { EntityFactoryOptions } from '../../types/entity';
 import SpriteSheet from '../SpriteSheet.ts';
 import AudioBoard from '../AudioBoard.ts';
 import { InputEvent, InputEventTypes, InputReceiver } from '../../types/input';
-import { FRICTION, FRICTION_FAST, PLAYER_JUMP_VELOCITY } from '../config.ts';
+import { LOW_FRICTION, HIGH_FRICTION, PLAYER_JUMP_VELOCITY } from '../config.ts';
 
-// Use config constants for drag values
-const SLOW_DRAG = FRICTION;
-const FAST_DRAG = FRICTION_FAST;
+// Use config constants for drag values with better naming
+const WALK_DRAG = HIGH_FRICTION; // גרירה גבוהה = הליכה
+const RUN_DRAG = LOW_FRICTION; // גרירה נמוכה = ריצה
 
 export function loadMario(audioContext: AudioContext) {
   return Promise.all([loadSpriteSheet('mario'), loadAudioBoard('mario', audioContext)]).then(
@@ -137,7 +137,7 @@ function createMarioFactory(sprite: SpriteSheet, audio: AudioBoard) {
     mario.turbo = function (turboOn: boolean): void {
       const go = this.getGoTrait();
       if (go) {
-        go.dragFactor = turboOn ? FAST_DRAG : SLOW_DRAG;
+        go.dragFactor = turboOn ? RUN_DRAG : WALK_DRAG;
       }
     };
 
